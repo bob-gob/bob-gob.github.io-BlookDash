@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlookDash | Creator & Market Edition</title>
+    <title>BlookDash | Version V3</title>
     <style>
         :root {
             --primary: #3498db; --dark-bg: #0b101b; --sidebar-bg: #161d2b;
@@ -28,6 +28,14 @@
         #main-content { flex-grow: 1; overflow-y: auto; padding: 40px; }
         .stats-bar { background: var(--sidebar-bg); padding: 15px 30px; border-radius: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); }
 
+        /* Creator Layout */
+        .creator-container { display: flex; gap: 30px; flex-wrap: wrap; }
+        .creator-form { background: var(--sidebar-bg); padding: 30px; border-radius: 15px; flex: 1; min-width: 300px; }
+        .emoji-picker { background: var(--sidebar-bg); padding: 20px; border-radius: 15px; flex: 1; min-width: 300px; height: 450px; overflow-y: auto; border: 1px solid #2c3e50; }
+        .emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 10px; margin-top: 10px; }
+        .emoji-item { font-size: 24px; cursor: pointer; padding: 5px; border-radius: 5px; text-align: center; transition: 0.2s; }
+        .emoji-item:hover { background: rgba(255,255,255,0.1); transform: scale(1.2); }
+
         /* Animations */
         @keyframes slideUp { 0% { transform: translateY(100vh); } 100% { transform: translateY(0); } }
         @keyframes zigzag { 0% { transform: translate(-100vw, -100px); } 25% { transform: translate(50vw, 50px); } 50% { transform: translate(-50vw, -50px); } 100% { transform: translate(0, 0); } }
@@ -41,12 +49,9 @@
         .anim-chroma { animation: spinFade 1.5s ease-out; }
         .rarity-exclusive { animation: rainbow-glow 3s infinite linear; border: 4px solid red !important; }
 
-        /* Market Cards */
+        /* Cards */
         .pack-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         .pack-card { background: var(--sidebar-bg); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid #2c3e50; transition: 0.3s; cursor: pointer; position: relative; }
-        .owner-select-menu { margin-top: 10px; width: 100%; background: #0b101b; color: white; border: 1px solid var(--primary); border-radius: 5px; padding: 5px; display: none; }
-
-        /* Blook Cards */
         .blook-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
         .blook-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; border-bottom: 6px solid gray; position: relative; }
         .sell-btn { position: absolute; top: 5px; right: 5px; background: var(--danger); border: none; color: white; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; }
@@ -94,21 +99,27 @@
                         <button id="spam-btn" class="action-btn" style="background: var(--danger); color: white; display: none;" onclick="toggleSpam()">Spam Open: OFF</button>
                     </div>
                     <div class="pack-container" id="pack-list"></div>
-                    
                     <h2 style="margin-top: 50px; border-top: 1px solid #2c3e50; padding-top: 20px;">Community Marketplace</h2>
                     <div id="community-grid" class="pack-container"></div>
                 </div>
 
                 <div id="stats-creator" class="section" style="display:none;">
                     <h1>Blook Creator</h1>
-                    <div style="background: var(--sidebar-bg); padding: 30px; border-radius: 15px; max-width: 500px;">
-                        <p>Blook Name:</p>
-                        <input type="text" id="custom-name" class="auth-input" placeholder="Cool Blook">
-                        <p>Blook Emoji:</p>
-                        <input type="text" id="custom-emoji" class="auth-input" placeholder="🔥">
-                        <p>Market Price (Tokens):</p>
-                        <input type="number" id="custom-price" class="auth-input" placeholder="5000">
-                        <button onclick="createBlook()" class="action-btn" style="background: var(--primary); width:100%; margin-top:10px;">Create & List Blook</button>
+                    <div class="creator-container">
+                        <div class="creator-form">
+                            <p>Blook Name:</p>
+                            <input type="text" id="custom-name" class="auth-input" placeholder="Cool Blook">
+                            <p>Blook Emoji (Search and click one):</p>
+                            <input type="text" id="custom-emoji" class="auth-input" placeholder="🔥" readonly>
+                            <p>Market Price (Tokens):</p>
+                            <input type="number" id="custom-price" class="auth-input" placeholder="5000">
+                            <button onclick="createBlook()" class="action-btn" style="background: var(--primary); width:100%; margin-top:10px;">Create & List Blook</button>
+                        </div>
+                        <div class="emoji-picker">
+                            <h3 style="margin-top:0;">Emoji Library</h3>
+                            <input type="text" id="emoji-search" class="auth-input" placeholder="Search emojis (e.g. shark, bear)..." oninput="filterEmojis()">
+                            <div id="emoji-list"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -148,13 +159,19 @@
         const TEN_DAYS = 10 * 24 * 60 * 60 * 1000;
 
         const rarityInfo = {
-            'Common': { color: '#00ff00', confetti: '#2ecc71', anim: 'anim-common-rare', sell: 100 },
-            'Rare': { color: '#0000ff', confetti: '#00008B', anim: 'anim-common-rare', sell: 200 },
-            'Epic': { color: '#ff0000', confetti: '#e74c3c', anim: 'anim-epic', sell: 500 },
-            'Legendary': { color: '#ffff00', confetti: '#f1c40f', anim: 'anim-legendary', sell: 10000 },
-            'Chroma': { color: 'lightblue', confetti: '#00FBFF', anim: 'anim-chroma', sell: 100000 },
-            'Exclusive': { color: 'rainbow', confetti: 'rainbow', anim: 'anim-chroma', sell: 1000000000 },
-            'Custom': { color: '#9b59b6', confetti: '#8e44ad', anim: 'anim-chroma', sell: 0 }
+            'Common': { color: '#00ff00', confetti: '#2ecc71', anim: 'anim-common-rare', sell: 100n },
+            'Rare': { color: '#0000ff', confetti: '#00008B', anim: 'anim-common-rare', sell: 200n },
+            'Epic': { color: '#ff0000', confetti: '#e74c3c', anim: 'anim-epic', sell: 500n },
+            'Legendary': { color: '#ffff00', confetti: '#f1c40f', anim: 'anim-legendary', sell: 10000n },
+            'Chroma': { color: 'lightblue', confetti: '#00FBFF', anim: 'anim-chroma', sell: 1000000n },
+            'Exclusive': { color: 'rainbow', confetti: 'rainbow', anim: 'anim-chroma', sell: 1000000000n },
+            'Custom': { color: '#9b59b6', confetti: '#8e44ad', anim: 'anim-chroma', sell: 0n }
+        };
+
+        const emojiCategories = {
+            "Animals": ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🐤","🦆","🦅","🦉","🦇","🐺","🐗","🐴","🦄","🐝","🐛","🦋","🐌","🐞","🐜","🦗","🕷","🐢","🐍","🦎","🦖","🦕","🐙","🦑","🦐","🦞","🦀","🐡","🐠","🐟","🐬","🐳","🐋","🦈","🐊","🐅","🐆","🦓","🦍","🦧","🐘","🦛","🦏","🐪","🐫","🦒","🦘","🐃","🐂","🐄","🐎","🐖","🐏","🐑","🐐","🦌","🐕","🐩","🦮","🐈","🐓","🦃","🦚","🦜","🦢","🦩","🕊","🐇","🦝","🦨","🦡","🦦","🦥","🐁","🐀","🐿","🦔"],
+            "Faces": ["😀","😃","😄","😁","😆","😅","🤣","😂","🙂","🙃","😉","😊","😇","🥰","😍","🤩","😘","😗","😚","😙","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","🤐","🤨","😐","😑","😶","😏","😒","🙄","😬","🤥","😌","😔","😪","🤤","😴","😷","🤒","🤕","🤢","🤮","🤧","🥵","🥶","🥴","😵","🤯","🤠","🥳","😎","🤓","🧐","😕","😟","🙁","☹️","😮","😯","😲","😳","🥺","😦","😧","😨","😰","😥","😢","😭","😱","😖","😣","😞","😓","😩","😫","🥱","😤","😡","😠","🤬","😈","👿","💀","☠️","💩","🤡","👹","👺","👻","👽","👾","🤖"],
+            "Objects": ["💎","💰","⚔️","🛡️","🚀","🔥","⚡️","🌈","💻","🕹️","🔮","🎁","🎈","🧪","🧬","🩺","🧱","⚙️","⚒️","⛏️","🔫","🧨","🪓","🏹","🧿","🔭","🔬"]
         };
 
         const packs = {
@@ -164,6 +181,7 @@
             shark: { name: 'Shark Pack', cost: 1000n, pool: [{ name: 'Megalodon', rarity: 'Chroma', img: '🦈' },{ name: 'Great White Shark', rarity: 'Legendary', img: '🦈' },{ name: 'Hammerhead Shark', rarity: 'Epic', img: '🔨' },{ name: 'Mako Shark', rarity: 'Rare', img: '💨' },{ name: 'Reef Shark', rarity: 'Common', img: '🌊' }] }
         };
 
+        // --- AUTH & CORE ---
         function handleAuth() {
             const u = document.getElementById('user-input').value.trim();
             if(!u) return alert("Enter Username");
@@ -186,6 +204,7 @@
             document.getElementById('game-ui').style.display = 'block';
             document.getElementById('user-display').innerText = currentUser || "Guest";
             initMarket();
+            renderEmojiGrid(""); 
             checkClaim();
             updateUI();
         }
@@ -194,6 +213,43 @@
             if(!currentUser) return;
             const d = { tokens: userData.tokens.toString(), inventory: userData.inventory, lastClaim: userData.lastClaim };
             localStorage.setItem('bd_user_' + currentUser, JSON.stringify(d));
+        }
+
+        // --- CREATOR & EMOJI SEARCH ---
+        function filterEmojis() {
+            const term = document.getElementById('emoji-search').value;
+            renderEmojiGrid(term);
+        }
+
+        function renderEmojiGrid(filter) {
+            const container = document.getElementById('emoji-list');
+            container.innerHTML = '';
+            const searchTerm = filter.toLowerCase();
+
+            for (let cat in emojiCategories) {
+                const filteredEmojis = emojiCategories[cat].filter(emoji => 
+                    cat.toLowerCase().includes(searchTerm) || searchTerm === ""
+                );
+
+                if (filteredEmojis.length > 0) {
+                    const title = document.createElement('h4');
+                    title.innerText = cat;
+                    title.style.margin = "15px 0 5px 0";
+                    title.style.color = "var(--primary)";
+                    container.appendChild(title);
+                    
+                    const grid = document.createElement('div');
+                    grid.className = 'emoji-grid';
+                    filteredEmojis.forEach(emoji => {
+                        const el = document.createElement('div');
+                        el.className = 'emoji-item';
+                        el.innerText = emoji;
+                        el.onclick = () => { document.getElementById('custom-emoji').value = emoji; };
+                        grid.appendChild(el);
+                    });
+                    container.appendChild(grid);
+                }
+            }
         }
 
         function createBlook() {
@@ -211,6 +267,7 @@
             showSection('market', document.querySelector('.nav-btn'));
         }
 
+        // --- MARKET & COLLECTION ---
         function renderCommunity() {
             const grid = document.getElementById('community-grid');
             grid.innerHTML = '';
@@ -228,7 +285,6 @@
             if(userData.tokens < price) return alert("Not enough tokens!");
             if(blook.creator === currentUser) return alert("You made this!");
 
-            // Update Creator tokens in LocalStorage
             const creatorSave = JSON.parse(localStorage.getItem('bd_user_' + blook.creator));
             if(creatorSave) {
                 creatorSave.tokens = (BigInt(creatorSave.tokens) + price).toString();
@@ -237,9 +293,7 @@
 
             userData.tokens -= price;
             userData.inventory.unshift({...blook});
-            updateUI();
-            saveData();
-            alert("Bought!");
+            updateUI(); saveData(); alert("Bought!");
         }
 
         function initMarket() {
@@ -250,11 +304,13 @@
                 const card = document.createElement('div');
                 card.className = 'pack-card';
                 card.innerHTML = `<h3>${p.name}</h3><p>${p.cost} Tokens</p>`;
+                
                 const select = document.createElement('select');
                 select.className = 'owner-select-menu';
                 select.id = 'select-' + key;
+                select.style.display = isOwner ? 'block' : 'none';
                 p.pool.forEach((b, i) => { select.innerHTML += `<option value="${i}">${b.name}</option>`; });
-                if(isOwner) select.style.display = 'block';
+                
                 card.onclick = (e) => { if(e.target.tagName !== 'SELECT') openPack(key); };
                 card.appendChild(select);
                 list.appendChild(card);
@@ -347,20 +403,23 @@
                 const card = document.createElement('div');
                 card.className = 'blook-card ' + (item.rarity === 'Exclusive' ? 'rarity-exclusive' : '');
                 card.style.borderBottomColor = info.color === 'rainbow' ? 'transparent' : info.color;
-                card.innerHTML = `<button class="sell-btn" onclick="sellOne(${index})">X</button><div style="font-size:45px;">${item.img}</div><b>${item.name}</b>`;
+                card.innerHTML = `<button class="sell-btn" onclick="sellOne(${index})">X</button>
+                                  <div style="font-size:45px;">${item.img}</div>
+                                  <b>${item.name}</b><br>
+                                  <small style="color: #7f8c8d;">Sell: ${info.sell.toLocaleString()}</small>`;
                 grid.appendChild(card);
             });
         }
 
         function sellOne(index) {
             const item = userData.inventory[index];
-            userData.tokens += BigInt(rarityInfo[item.rarity].sell || 0);
+            userData.tokens += rarityInfo[item.rarity].sell;
             userData.inventory.splice(index, 1);
             updateUI(); saveData(); renderInv();
         }
 
         function sellAll() {
-            userData.inventory.forEach(item => { userData.tokens += BigInt(rarityInfo[item.rarity].sell || 0); });
+            userData.inventory.forEach(item => { userData.tokens += rarityInfo[item.rarity].sell; });
             userData.inventory = []; updateUI(); saveData(); renderInv();
         }
     </script>
