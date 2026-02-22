@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlookDash | Electric Blue & Promo Update</title>
+    <title>BlookDash | !New Update!</title>
     <style>
         :root {
             --primary: #3498db;
@@ -13,7 +13,7 @@
             --danger: #e74c3c;
             --success: #2ecc71;
             --warning: #f1c40f;
-            --chroma-blue: #00FBFF; /* Neon Light Blue */
+            --chroma-blue: #00FBFF;
         }
 
         body {
@@ -27,7 +27,7 @@
             user-select: none; 
         }
 
-        /* Rainbow Animation for Exclusive Blook */
+        /* Rainbow Animation */
         @keyframes rainbow-glow {
             0% { border-bottom-color: #ff0000; box-shadow: 0 0 15px #ff0000; }
             20% { border-bottom-color: #ffff00; }
@@ -37,148 +37,44 @@
             100% { border-bottom-color: #ff00ff; box-shadow: 0 0 15px #ff00ff; }
         }
 
-        /* Intense Light Blue Chroma Animation */
+        /* Electric Blue Animation */
         @keyframes chroma-pulse {
             0% { border-bottom-color: var(--chroma-blue); box-shadow: 0 0 15px var(--chroma-blue); }
             50% { border-bottom-color: #A0FEFF; box-shadow: 0 0 35px #A0FEFF; }
             100% { border-bottom-color: var(--chroma-blue); box-shadow: 0 0 15px var(--chroma-blue); }
         }
 
-        .rarity-chroma { 
-            animation: chroma-pulse 1.5s infinite ease-in-out; 
-            border-bottom: 6px solid var(--chroma-blue) !important; 
-        }
+        .rarity-chroma { animation: chroma-pulse 1.5s infinite ease-in-out; border-bottom: 6px solid var(--chroma-blue) !important; }
+        .rarity-exclusive { animation: rainbow-glow 3s infinite linear; border-bottom: 6px solid #ff0000 !important; }
 
-        .rarity-exclusive {
-            animation: rainbow-glow 3s infinite linear;
-            border-bottom: 6px solid #ff0000 !important;
-        }
-
-        #sidebar {
-            width: 240px;
-            background: var(--sidebar-bg);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            border-right: 2px solid #2c3e50;
-            z-index: 10;
-        }
-
-        .nav-btn {
-            background: none; border: none; color: #bdc3c7;
-            text-align: left; padding: 12px; font-size: 18px;
-            cursor: pointer; border-radius: 8px; margin-bottom: 8px;
-            transition: 0.2s;
-        }
-
+        #sidebar { width: 240px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 20px; border-right: 2px solid #2c3e50; z-index: 10; }
+        .nav-btn { background: none; border: none; color: #bdc3c7; text-align: left; padding: 12px; font-size: 18px; cursor: pointer; border-radius: 8px; margin-bottom: 8px; transition: 0.2s; }
         .nav-btn:hover { background: rgba(255,255,255,0.05); color: white; }
         .nav-btn.active { background: var(--primary); color: white; }
         
-        .auth-btn {
-            background: #2c3e50;
-            color: #95a5a6;
-            font-size: 14px;
-            border: 1px solid #34495e;
-            text-align: center;
-            margin-top: auto;
-        }
-
+        .auth-btn { background: #2c3e50; color: #95a5a6; font-size: 14px; border: 1px solid #34495e; text-align: center; margin-top: auto; }
         .spam-toggle { color: var(--danger); font-weight: bold; border: 1px solid var(--danger); }
         .spam-on { background: var(--danger); color: white; }
 
         #main-content { flex-grow: 1; overflow-y: auto; padding: 40px; }
-
-        .stats-bar {
-            background: var(--sidebar-bg); padding: 15px 30px;
-            border-radius: 10px; margin-bottom: 30px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 3px solid var(--primary);
-        }
-
+        .stats-bar { background: var(--sidebar-bg); padding: 15px 30px; border-radius: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); }
+        
         .section { display: none; }
         .section.active { display: block; }
 
-        /* Promo Page Styles */
-        .promo-container {
-            max-width: 500px;
-            margin: 50px auto;
-            background: var(--sidebar-bg);
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            border: 2px solid var(--primary);
-        }
-
-        #promo-input {
-            width: 80%;
-            padding: 12px;
-            margin: 20px 0;
-            border-radius: 5px;
-            border: none;
-            background: #0b101b;
-            color: white;
-            font-size: 18px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        .pack-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .pack-card {
-            background: var(--sidebar-bg);
-            padding: 25px;
-            border-radius: 20px;
-            text-align: center;
-            border: 2px solid #2c3e50;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
+        .pack-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .pack-card { background: var(--sidebar-bg); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid #2c3e50; transition: 0.3s; cursor: pointer; }
         .pack-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .owner-pack { border: 2px solid var(--warning) !important; background: linear-gradient(145deg, #161d2b, #4a3c10); }
 
-        .blook-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
-        }
-
-        .blook-card {
-            background: var(--card-bg); padding: 20px;
-            border-radius: 15px; text-align: center;
-            border-bottom: 6px solid gray;
-        }
-
-        #spam-log {
-            background: #000; border-radius: 10px;
-            height: 120px; overflow-y: auto;
-            margin-top: 20px; padding: 10px;
-            font-family: monospace; font-size: 12px;
-            text-align: left; border: 1px solid #333;
-        }
-
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; 
-            width: 100%; height: 100%; background: rgba(0,0,0,0.85);
-            z-index: 9999; justify-content: center; align-items: center;
-        }
-
-        .modal-content {
-            background: #1e2530; padding: 30px; border-radius: 15px;
-            text-align: center; border: 2px solid var(--primary);
-            max-width: 450px; width: 90%;
-        }
-
-        .action-btn { padding: 12px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .action-btn:active { transform: scale(0.95); }
+        .blook-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        .blook-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; border-bottom: 6px solid gray; position: relative; }
         
-        .owner-choice-btn {
-            display: block; width: 100%; margin: 5px 0; padding: 10px;
-            border-radius: 5px; border: none; cursor: pointer; font-weight: bold;
-        }
+        #spam-log { background: #000; border-radius: 10px; height: 120px; overflow-y: auto; margin-top: 20px; padding: 10px; font-family: monospace; font-size: 12px; text-align: left; border: 1px solid #333; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content { background: #1e2530; padding: 30px; border-radius: 15px; text-align: center; border: 2px solid var(--primary); max-width: 450px; width: 90%; }
+        .action-btn { padding: 12px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; margin: 5px; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -189,42 +85,22 @@
         <button id="btn-collection" class="nav-btn">🎒 Collection</button>
         <button id="btn-promo-page" class="nav-btn">🎟️ Promo Code</button>
         <button id="spam-btn" class="nav-btn spam-toggle">⚡ Spam Mode: OFF</button>
-        
         <button id="btn-owner" class="nav-btn auth-btn">🔑 System Auth</button>
     </div>
 
     <div id="main-content">
         <div class="stats-bar">
-            <div>
-                Tokens: <strong id="token-display">50,000</strong>
-                <button id="btn-exit-owner" style="display:none; background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:5px; margin-left:10px; cursor:pointer;">Exit Owner Mode</button>
-            </div>
+            <div>Tokens: <strong id="token-display">50,000</strong> <button id="btn-exit-owner" style="display:none; background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:5px; margin-left:10px; cursor:pointer;">Exit Owner</button></div>
             <span id="owner-tag" style="display:none; color:var(--chroma-blue); font-weight:bold;">[OWNER ACTIVE]</span>
         </div>
 
         <div id="market" class="section active">
             <h1>Market</h1>
-            <div class="pack-container">
-                <div class="pack-card" onclick="openPackMenu('roman')">
-                    <div style="font-size: 50px;">🏛️</div>
-                    <h3>Roman Pack</h3>
-                    <p style="color: #bdc3c7;">1,000 Tokens</p>
-                </div>
-                <div class="pack-card" onclick="openPackMenu('science')">
-                    <div style="font-size: 50px;">🧪</div>
-                    <h3>Science Pack</h3>
-                    <p style="color: #bdc3c7;">1,000 Tokens</p>
-                </div>
-                <div class="pack-card" onclick="openPackMenu('aquatic')">
-                    <div style="font-size: 50px;">🌊</div>
-                    <h3>Aquatic Pack</h3>
-                    <p style="color: #bdc3c7;">1,000 Tokens</p>
-                </div>
-                <div class="pack-card" onclick="openPackMenu('shark')">
-                    <div style="font-size: 50px;">🦈</div>
-                    <h3>Shark Pack</h3>
-                    <p style="color: #bdc3c7;">1,000 Tokens</p>
-                </div>
+            <div id="pack-list" class="pack-container">
+                <div class="pack-card" onclick="openPackMenu('roman')">🏛️ <h3>Roman Pack</h3><p>1,000 Tokens</p></div>
+                <div class="pack-card" onclick="openPackMenu('science')">🧪 <h3>Science Pack</h3><p>1,000 Tokens</p></div>
+                <div class="pack-card" onclick="openPackMenu('aquatic')">🌊 <h3>Aquatic Pack</h3><p>1,000 Tokens</p></div>
+                <div class="pack-card" onclick="openPackMenu('shark')">🦈 <h3>Shark Pack</h3><p>1,000 Tokens</p></div>
             </div>
             <div id="spam-log" style="display:none;"></div>
         </div>
@@ -238,10 +114,9 @@
         </div>
 
         <div id="promo-section" class="section">
-            <div class="promo-container">
+            <div style="max-width: 500px; margin: 50px auto; background: var(--sidebar-bg); padding: 30px; border-radius: 15px; text-align: center; border: 2px solid var(--primary);">
                 <h1>Redeem Promo Code</h1>
-                <p>Enter your secret code below to unlock exclusive Blooks!</p>
-                <input type="text" id="promo-input" placeholder="Type code here...">
+                <input type="text" id="promo-input" placeholder="Type code here..." style="width: 80%; padding: 12px; margin: 20px 0; background: #0b101b; color: white; border: none; text-align: center;">
                 <br>
                 <button onclick="redeemPromo()" class="action-btn" style="background:var(--success); color:white;">Redeem Code</button>
                 <p id="promo-msg" style="margin-top:20px; font-weight:bold;"></p>
@@ -252,66 +127,58 @@
     <div id="confirmBox" class="modal">
         <div class="modal-content">
             <h2 id="confirm-title">Open Pack?</h2>
-            <p>Spend 1,000 tokens?</p>
-            <button id="btn-yes" class="action-btn" style="background:var(--success); color:white; margin:5px;">Yes, Open!</button>
-            <button onclick="closeModal('confirmBox')" class="action-btn" style="background:var(--danger); color:white; margin:5px;">Cancel</button>
+            <p id="confirm-price">Spend tokens?</p>
+            <button id="btn-yes" class="action-btn" style="background:var(--success); color:white;">Yes!</button>
+            <button onclick="closeModal('confirmBox')" class="action-btn" style="background:var(--danger); color:white;">Cancel</button>
         </div>
     </div>
 
     <div id="ownerModal" class="modal">
         <div class="modal-content">
-            <h2 style="color:var(--warning);">OWNER SUMMON</h2>
-            <div id="summon-options" style="max-height: 300px; overflow-y: auto;"></div>
-            <hr style="border:1px solid #34495e;">
-            <button id="btn-clear-inv" class="action-btn" style="background:orange; color:white; width:100%; margin-bottom:10px;">Wipe Collection</button>
-            <button onclick="closeModal('ownerModal')" class="action-btn" style="background:#7f8c8d; color:white; width:100%;">Close</button>
+            <h2 style="color:var(--warning);">SYSTEM OVERRIDE</h2>
+            <button onclick="grantDecillion()" class="action-btn" style="background:gold; color:black; width:100%;">Grant 1 Decillion Tokens</button>
+            <button id="btn-clear-inv" class="action-btn" style="background:orange; color:white; width:100%;">Wipe Collection</button>
+            <button onclick="closeModal('ownerModal')" class="action-btn" style="background:#555; color:white; width:100%;">Close</button>
         </div>
     </div>
 
     <script>
         (function() {
-            let tokens = parseInt(localStorage.getItem('tokens')) || 50000;
+            let tokens = BigInt(localStorage.getItem('tokens_big') || "50000");
             let inventory = JSON.parse(localStorage.getItem('myBlooks')) || [];
             let isOwner = false;
             let spamMode = false;
             let activePack = 'roman';
 
+            const DECILLION = 1000000000000000000000000000000000n;
+
             const packs = {
-                roman: {
-                    chroma: { name: 'Mars', rarity: 'Chroma', color: 'lightblue', img: '🔴', sell: 100000 },
-                    legendary: { name: 'Julius Caesar', rarity: 'Legendary', color: '#ffff00', img: '👑', sell: 10000 },
-                    epic: { name: 'Gladiator', rarity: 'Epic', color: '#ff0000', img: '⚔️', sell: 500 },
-                    rare: { name: 'Centurion', rarity: 'Rare', color: '#0000ff', img: '🛡️', sell: 200 },
-                    common: { name: 'Roman Soldier', rarity: 'Common', color: '#00ff00', img: '💂', sell: 100 }
-                },
-                science: {
-                    chroma: { name: 'The Atom', rarity: 'Chroma', color: 'lightblue', img: '⚛️', sell: 100000 },
-                    legendary: { name: 'Albert Einstein', rarity: 'Legendary', color: '#ffff00', img: '🧠', sell: 10000 },
-                    epic: { name: 'DNA Helix', rarity: 'Epic', color: '#ff0000', img: '🧬', sell: 500 },
-                    rare: { name: 'Microscope', rarity: 'Rare', color: '#0000ff', img: '🔬', sell: 200 },
-                    common: { name: 'Test Tube', rarity: 'Common', color: '#00ff00', img: '🧪', sell: 100 }
-                },
-                aquatic: {
-                    chroma: { name: 'Kraken', rarity: 'Chroma', color: 'lightblue', img: '🐙', sell: 100000 },
-                    legendary: { name: 'Blue Whale', rarity: 'Legendary', color: '#ffff00', img: '🐋', sell: 10000 },
-                    epic: { name: 'Giant Squid', rarity: 'Epic', color: '#ff0000', img: '🦑', sell: 500 },
-                    rare: { name: 'Stingray', rarity: 'Rare', color: '#0000ff', img: '🐟', sell: 200 },
-                    common: { name: 'Clownfish', rarity: 'Common', color: '#00ff00', img: '🐠', sell: 100 }
-                },
-                shark: {
-                    chroma: { name: 'Megalodon', rarity: 'Chroma', color: 'lightblue', img: '🦈', sell: 100000 },
-                    legendary: { name: 'Great White Shark', rarity: 'Legendary', color: '#ffff00', img: '🦈', sell: 10000 },
-                    epic: { name: 'Hammerhead Shark', rarity: 'Epic', color: '#ff0000', img: '🔨', sell: 500 },
-                    rare: { name: 'Mako Shark', rarity: 'Rare', color: '#0000ff', img: '💨', sell: 200 },
-                    common: { name: 'Reef Shark', rarity: 'Common', color: '#00ff00', img: '🌊', sell: 100 }
-                }
+                owner: { cost: DECILLION, jandul: { name: 'Jandul Dul Dul', rarity: 'Exclusive', color: 'rainbow', img: '🤡', sell: 1000000 }, raccoon: { name: 'Raccooni Jandelini', rarity: 'Exclusive', color: 'rainbow', img: '🦝', sell: 1000000 } },
+                roman: { cost: 1000n, chroma: { name: 'Mars', rarity: 'Chroma', color: 'lightblue', img: '🔴', sell: 100000 }, common: { name: 'Soldier', rarity: 'Common', color: '#00ff00', img: '💂', sell: 100 } },
+                science: { cost: 1000n, chroma: { name: 'Atom', rarity: 'Chroma', color: 'lightblue', img: '⚛️', sell: 100000 }, common: { name: 'Test Tube', rarity: 'Common', color: '#00ff00', img: '🧪', sell: 100 } },
+                aquatic: { cost: 1000n, chroma: { name: 'Kraken', rarity: 'Chroma', color: 'lightblue', img: '🐙', sell: 100000 }, common: { name: 'Fish', rarity: 'Common', color: '#00ff00', img: '🐠', sell: 100 } },
+                shark: { cost: 1000n, chroma: { name: 'Megalodon', rarity: 'Chroma', color: 'lightblue', img: '🦈', sell: 100000 }, common: { name: 'Shark', rarity: 'Common', color: '#00ff00', img: '🌊', sell: 100 } }
             };
 
             function updateUI() {
-                document.getElementById('token-display').innerText = isOwner ? "∞" : tokens.toLocaleString();
+                document.getElementById('token-display').innerText = tokens.toLocaleString();
                 document.getElementById('owner-tag').style.display = isOwner ? 'inline' : 'none';
                 document.getElementById('btn-exit-owner').style.display = isOwner ? 'inline' : 'none';
-                localStorage.setItem('tokens', tokens);
+                
+                const packList = document.getElementById('pack-list');
+                const existingOwnerPack = document.getElementById('owner-pack-card');
+                if (isOwner && !existingOwnerPack) {
+                    const op = document.createElement('div');
+                    op.id = 'owner-pack-card';
+                    op.className = 'pack-card owner-pack';
+                    op.onclick = () => openPackMenu('owner');
+                    op.innerHTML = `🌟 <h3>Owner's Vault</h3><p>1 Decillion Tokens</p>`;
+                    packList.prepend(op);
+                } else if (!isOwner && existingOwnerPack) {
+                    existingOwnerPack.remove();
+                }
+
+                localStorage.setItem('tokens_big', tokens.toString());
                 localStorage.setItem('myBlooks', JSON.stringify(inventory));
             }
 
@@ -320,109 +187,84 @@
                 grid.innerHTML = '';
                 inventory.forEach((item, index) => {
                     const card = document.createElement('div');
-                    // Check for Rainbow (Exclusive) vs Light Blue (Chroma)
-                    let rarityClass = '';
-                    if(item.color === 'rainbow') rarityClass = 'rarity-exclusive';
-                    else if(item.color === 'lightblue') rarityClass = 'rarity-chroma';
-
-                    card.className = 'blook-card ' + rarityClass;
-                    if(!rarityClass) card.style.borderBottomColor = item.color;
+                    let rClass = item.color === 'rainbow' ? 'rarity-exclusive' : (item.color === 'lightblue' ? 'rarity-chroma' : '');
+                    card.className = 'blook-card ' + rClass;
+                    if(!rClass) card.style.borderBottomColor = item.color;
+                    card.innerHTML = `<div style="font-size:50px;">${item.img}</div><div style="font-weight:bold;">${item.name}</div><div style="font-size:11px;">${item.rarity.toUpperCase()}</div>`;
                     
-                    card.innerHTML = `
-                        <div style="font-size:50px;">${item.img}</div>
-                        <div style="font-weight:bold;">${item.name}</div>
-                        <div style="color:${item.color === 'lightblue' ? 'var(--chroma-blue)' : (item.color === 'rainbow' ? '#ff00ff' : item.color)}; font-size:11px; font-weight:bold;">${item.rarity.toUpperCase()}</div>
-                    `;
                     const sBtn = document.createElement('button');
-                    sBtn.className = "action-btn";
-                    sBtn.style.cssText = "background:var(--danger); color:white; width:100%; margin-top:10px; font-size:10px; padding:8px;";
+                    sBtn.className = "action-btn"; sBtn.style.cssText = "background:var(--danger); color:white; width:100%; margin-top:10px; font-size:10px; padding:5px;";
                     sBtn.innerText = `Sell for ${item.sell}`;
-                    sBtn.onclick = () => {
-                        tokens += item.sell;
-                        inventory.splice(index, 1);
-                        updateUI();
-                        updateInventory();
-                    };
+                    sBtn.onclick = () => { tokens += BigInt(item.sell); inventory.splice(index, 1); updateUI(); updateInventory(); };
+                    
                     card.appendChild(sBtn);
                     grid.appendChild(card);
                 });
             }
 
-            // Promo Code Logic
-            window.redeemPromo = function() {
-                const val = document.getElementById('promo-input').value.trim().toUpperCase();
-                const msg = document.getElementById('promo-msg');
-                if(val === 'BRA1NR0TJANDULDUL') {
-                    inventory.unshift({ name: 'Jandul Dul Dul', rarity: 'Exclusive', color: 'rainbow', img: '🤡', sell: 500000 });
-                    msg.style.color = 'var(--success)';
-                    msg.innerText = "REDEEMED: You got Jandul Dul Dul!";
-                    document.getElementById('promo-input').value = "";
-                    updateUI();
-                } else {
-                    msg.style.color = 'var(--danger)';
-                    msg.innerText = "Invalid Promo Code!";
-                }
-            };
-
-            window.openPackMenu = function(packType) {
-                activePack = packType;
-                if (isOwner) {
-                    const container = document.getElementById('summon-options');
-                    container.innerHTML = '';
-                    Object.keys(packs[activePack]).forEach(key => {
-                        const b = packs[activePack][key];
-                        const btn = document.createElement('button');
-                        btn.className = "owner-choice-btn";
-                        btn.style.background = b.color === 'lightblue' ? 'var(--chroma-blue)' : b.color;
-                        btn.innerText = `${b.name} (${b.rarity})`;
-                        btn.onclick = () => summon(activePack, key);
-                        container.appendChild(btn);
-                    });
-                    document.getElementById('ownerModal').style.display = 'flex';
-                } else {
-                    if (spamMode) startOpening(); 
-                    else document.getElementById('confirmBox').style.display = 'flex';
-                }
-            };
-
-            function summon(p, key) {
-                const pull = packs[p][key];
-                inventory.unshift({...pull});
-                document.getElementById('ownerModal').style.display = 'none';
+            window.grantDecillion = function() {
+                tokens += DECILLION;
                 updateUI();
-            }
+                alert("Decillion Tokens Added.");
+            };
+
+            window.openPackMenu = function(p) {
+                activePack = p;
+                document.getElementById('confirm-price').innerText = `Spend ${packs[p].cost.toLocaleString()} tokens?`;
+                if(spamMode) startOpening(); 
+                else document.getElementById('confirmBox').style.display = 'flex';
+            };
 
             function startOpening() {
-                if (!isOwner && tokens < 1000) return alert("No tokens!");
-                if (!isOwner) tokens -= 1000;
-                const packBlooks = packs[activePack];
-                let roll = Math.random() * 100;
-                let pull = (roll < 1) ? packBlooks.chroma : (roll < 6 ? packBlooks.legendary : (roll < 16 ? packBlooks.epic : (roll < 41 ? packBlooks.rare : packBlooks.common)));
+                const cost = packs[activePack].cost;
+                if (tokens < cost) return alert("Insufficient funds!");
+                
+                // TAX SYSTEM: Tokens spent are immediately returned to the balance.
+                // Math: tokens - cost + cost = tokens (Balance never drops for the Owner).
+                tokens = tokens - cost + cost; 
+
+                let pool = packs[activePack];
+                let pull;
+                if (activePack === 'owner') {
+                    pull = Math.random() > 0.5 ? pool.jandul : pool.raccoon;
+                } else {
+                    let r = Math.random() * 100;
+                    pull = r < 5 ? pool.chroma : pool.common;
+                }
+
                 inventory.unshift({...pull});
                 updateUI();
                 if (spamMode) {
                     const log = document.getElementById('spam-log');
-                    log.innerHTML = `<div style="color:${pull.color === 'lightblue' ? 'var(--chroma-blue)' : pull.color}">> ${pull.name}</div>` + log.innerHTML;
+                    log.innerHTML = `<div style="color:${pull.color === 'lightblue' ? 'var(--chroma-blue)' : '#ff00ff'}">> ${pull.name}</div>` + log.innerHTML;
                 } else {
                     closeModal('confirmBox');
                     alert(`PULL: ${pull.name}!`);
                 }
             }
 
-            window.closeModal = (id) => document.getElementById(id).style.display = 'none';
-            
-            // Sidebar Navigation Logic
-            document.getElementById('btn-market').onclick = function() { showSection('market', this); };
-            document.getElementById('btn-collection').onclick = function() { showSection('collection', this); updateInventory(); };
-            document.getElementById('btn-promo-page').onclick = function() { showSection('promo-section', this); };
-            
+            window.redeemPromo = function() {
+                if(document.getElementById('promo-input').value.toUpperCase() === 'BRA1NR0TJANDULDUL') {
+                    inventory.unshift({...packs.owner.jandul});
+                    document.getElementById('promo-msg').innerText = "Redeemed!";
+                    updateUI();
+                }
+            };
+
+            // Buttons & Controls
             document.getElementById('btn-yes').onclick = startOpening;
+            document.getElementById('btn-market').onclick = () => showSection('market');
+            document.getElementById('btn-collection').onclick = () => { showSection('collection'); updateInventory(); };
+            document.getElementById('btn-promo-page').onclick = () => showSection('promo-section');
             document.getElementById('btn-exit-owner').onclick = () => { isOwner = false; updateUI(); };
+            document.getElementById('btn-owner').onclick = () => {
+                if(prompt("Auth Code:") === "ownerblkt") { isOwner = true; document.getElementById('ownerModal').style.display = 'flex'; updateUI(); }
+            };
             document.getElementById('btn-sell-all').onclick = () => {
-                if (!confirm("Sell all Blooks for tokens?")) return;
-                tokens += inventory.reduce((s, i) => s + i.sell, 0);
-                inventory = [];
-                updateUI(); updateInventory();
+                if (confirm("Sell all Blooks?")) { inventory.forEach(i => tokens += BigInt(i.sell)); inventory = []; updateUI(); updateInventory(); }
+            };
+            document.getElementById('btn-clear-inv').onclick = () => {
+                if (confirm("Wipe items?")) { inventory = []; updateUI(); updateInventory(); closeModal('ownerModal'); }
             };
             document.getElementById('spam-btn').onclick = function() {
                 spamMode = !spamMode;
@@ -430,19 +272,12 @@
                 this.classList.toggle('spam-on');
                 document.getElementById('spam-log').style.display = spamMode ? 'block' : 'none';
             };
-            document.getElementById('btn-owner').onclick = () => {
-                if (prompt("Auth Code:") === "ownerblkt") { isOwner = true; updateUI(); }
-            };
-            document.getElementById('btn-clear-inv').onclick = () => {
-                if (confirm("Clear all items?")) { inventory = []; updateUI(); updateInventory(); closeModal('ownerModal'); }
-            };
 
-            function showSection(id, btn) {
+            function showSection(id) {
                 document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 document.getElementById(id).classList.add('active');
-                btn.classList.add('active');
             }
+            window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
             updateUI();
         })();
