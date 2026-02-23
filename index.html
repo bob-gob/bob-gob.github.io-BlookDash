@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlookDash | Version V3</title>
+    <title>BlookDash | Version V4</title>
     <style>
         :root {
             --primary: #3498db; --dark-bg: #0b101b; --sidebar-bg: #161d2b;
@@ -13,12 +13,44 @@
 
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; overflow: hidden; user-select: none; }
 
-        /* Auth Screen */
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1c2331 0%, #0b101b 100%); display: flex; justify-content: center; align-items: center; z-index: 10000; }
-        .auth-container { background: var(--sidebar-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 350px; text-align: center; border: 1px solid #2c3e50; }
-        .auth-input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #2c3e50; background: #0b101b; color: white; box-sizing: border-box; }
+        /* --- LANDING & AUTH SCREENS --- */
+        #landing-screen, #login-screen, #signup-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle at center, #1c2331 0%, #0b101b 100%); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; 
+        }
 
-        /* Dashboard */
+        .bubble-title {
+            font-size: 80px; font-weight: 900; color: #fff; text-transform: uppercase;
+            letter-spacing: 5px; margin-bottom: 50px; position: relative; z-index: 2;
+            text-shadow: 
+                0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9,
+                0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1),
+                0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25),
+                0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+        }
+
+        .floating-blooks-container { position: absolute; width: 100%; height: 100%; top: 0; left: 0; overflow: hidden; z-index: 1; pointer-events: none; }
+        .float-blook { position: absolute; font-size: 40px; opacity: 0.3; animation: floatAround 15s infinite linear; }
+
+        @keyframes floatAround {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, 100px) rotate(90deg); }
+            50% { transform: translate(-50px, 200px) rotate(180deg); }
+            75% { transform: translate(-150px, 100px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        .auth-container { background: var(--sidebar-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 350px; text-align: center; border: 1px solid #2c3e50; z-index: 2; }
+        .auth-input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #2c3e50; background: #0b101b; color: white; box-sizing: border-box; }
+        
+        .btn-row { display: flex; gap: 20px; margin-top: 20px; z-index: 2; }
+        .landing-btn { padding: 15px 40px; font-size: 20px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; color: white; }
+        .btn-login { background: var(--primary); }
+        .btn-signup { background: var(--success); }
+        .landing-btn:hover { transform: scale(1.1); filter: brightness(1.2); }
+
+        /* --- DASHBOARD --- */
         #game-ui { display: none; height: 100vh; width: 100vw; }
         #sidebar { width: 240px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 20px; border-right: 2px solid #2c3e50; }
         .nav-btn { background: none; border: none; color: #bdc3c7; text-align: left; padding: 12px; font-size: 18px; cursor: pointer; border-radius: 8px; margin-bottom: 8px; transition: 0.2s; }
@@ -36,20 +68,7 @@
         .emoji-item { font-size: 24px; cursor: pointer; padding: 5px; border-radius: 5px; text-align: center; transition: 0.2s; }
         .emoji-item:hover { background: rgba(255,255,255,0.1); transform: scale(1.2); }
 
-        /* Animations */
-        @keyframes slideUp { 0% { transform: translateY(100vh); } 100% { transform: translateY(0); } }
-        @keyframes zigzag { 0% { transform: translate(-100vw, -100px); } 25% { transform: translate(50vw, 50px); } 50% { transform: translate(-50vw, -50px); } 100% { transform: translate(0, 0); } }
-        @keyframes topDownBounce { 0% { transform: translateY(-100vh); } 50% { transform: translateY(80vh); } 80% { transform: translateY(-10vh); } 100% { transform: translateY(0); } }
-        @keyframes spinFade { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(1080deg) scale(1); opacity: 1; } }
-        @keyframes rainbow-glow { 0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; } 50% { border-color: #00ff00; } 100% { border-color: #ff00ff; box-shadow: 0 0 15px #ff00ff; } }
-
-        .anim-common-rare { animation: slideUp 0.6s ease-out; }
-        .anim-epic { animation: zigzag 1.2s ease-in-out; }
-        .anim-legendary { animation: topDownBounce 1.5s ease-out; }
-        .anim-chroma { animation: spinFade 1.5s ease-out; }
-        .rarity-exclusive { animation: rainbow-glow 3s infinite linear; border: 4px solid red !important; }
-
-        /* Cards */
+        /* Pack & Blook Cards */
         .pack-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         .pack-card { background: var(--sidebar-bg); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid #2c3e50; transition: 0.3s; cursor: pointer; position: relative; }
         .blook-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
@@ -60,17 +79,49 @@
         .action-btn { padding: 12px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
         .confetti { position: absolute; width: 10px; height: 10px; z-index: 20001; animation: fall 3s linear forwards; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+
+        /* Animations */
+        @keyframes slideUp { 0% { transform: translateY(100vh); } 100% { transform: translateY(0); } }
+        @keyframes zigzag { 0% { transform: translate(-100vw, -100px); } 25% { transform: translate(50vw, 50px); } 50% { transform: translate(-50vw, -50px); } 100% { transform: translate(0, 0); } }
+        @keyframes topDownBounce { 0% { transform: translateY(-100vh); } 50% { transform: translateY(80vh); } 80% { transform: translateY(-10vh); } 100% { transform: translateY(0); } }
+        @keyframes spinFade { 0% { transform: rotate(0deg) scale(0); opacity: 0; } 100% { transform: rotate(1080deg) scale(1); opacity: 1; } }
+        @keyframes rainbow-glow { 0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; } 50% { border-color: #00ff00; } 100% { border-color: #ff00ff; box-shadow: 0 0 15px #ff00ff; } }
+        .anim-common-rare { animation: slideUp 0.6s ease-out; }
+        .anim-epic { animation: zigzag 1.2s ease-in-out; }
+        .anim-legendary { animation: topDownBounce 1.5s ease-out; }
+        .anim-chroma { animation: spinFade 1.5s ease-out; }
+        .rarity-exclusive { animation: rainbow-glow 3s infinite linear; border: 4px solid red !important; }
     </style>
 </head>
-<body>
+<body onload="initLanding()">
 
-    <div id="auth-screen">
+    <div id="landing-screen">
+        <div class="floating-blooks-container" id="bg-blooks"></div>
+        <h1 class="bubble-title">BlookDash</h1>
+        <div class="btn-row">
+            <button class="landing-btn btn-login" onclick="openAuth('login')">Login</button>
+            <button class="landing-btn btn-signup" onclick="openAuth('signup')">Sign Up</button>
+        </div>
+        <p style="margin-top: 30px; cursor: pointer; color: #bdc3c7;" onclick="continueAsGuest()">Guest Mode</p>
+    </div>
+
+    <div id="login-screen" style="display:none;">
         <div class="auth-container">
-            <h1 style="color: var(--primary);">BlookDash</h1>
-            <input type="text" id="user-input" class="auth-input" placeholder="Username">
-            <input type="password" id="pass-input" class="auth-input" placeholder="Password">
-            <button class="action-btn" style="background: var(--primary); color: white; width: 100%;" onclick="handleAuth()">Login / Create Account</button>
-            <p style="font-size: 12px; color: #7f8c8d; cursor: pointer; margin-top: 20px;" onclick="continueAsGuest()">Play as Guest</p>
+            <h2 style="color: var(--primary);">Login</h2>
+            <input type="text" id="login-user" class="auth-input" placeholder="Username">
+            <input type="password" id="login-pass" class="auth-input" placeholder="Password">
+            <button class="action-btn" style="background: var(--primary); color: white; width: 100%; margin-top: 10px;" onclick="handleLogin()">Login</button>
+            <p style="font-size: 12px; margin-top: 15px; cursor: pointer;" onclick="openAuth('landing')">← Back</p>
+        </div>
+    </div>
+
+    <div id="signup-screen" style="display:none;">
+        <div class="auth-container">
+            <h2 style="color: var(--success);">Create Account</h2>
+            <input type="text" id="signup-user" class="auth-input" placeholder="Choose Username">
+            <input type="password" id="signup-pass" class="auth-input" placeholder="Choose Password">
+            <button class="action-btn" style="background: var(--success); color: white; width: 100%; margin-top: 10px;" onclick="handleSignup()">Sign Up</button>
+            <p style="font-size: 12px; margin-top: 15px; cursor: pointer;" onclick="openAuth('landing')">← Back</p>
         </div>
     </div>
 
@@ -109,7 +160,7 @@
                         <div class="creator-form">
                             <p>Blook Name:</p>
                             <input type="text" id="custom-name" class="auth-input" placeholder="Cool Blook">
-                            <p>Blook Emoji (Search and click one):</p>
+                            <p>Blook Emoji:</p>
                             <input type="text" id="custom-emoji" class="auth-input" placeholder="🔥" readonly>
                             <p>Market Price (Tokens):</p>
                             <input type="number" id="custom-price" class="auth-input" placeholder="5000">
@@ -117,7 +168,7 @@
                         </div>
                         <div class="emoji-picker">
                             <h3 style="margin-top:0;">Emoji Library</h3>
-                            <input type="text" id="emoji-search" class="auth-input" placeholder="Search emojis (e.g. shark, bear)..." oninput="filterEmojis()">
+                            <input type="text" id="emoji-search" class="auth-input" placeholder="Search emojis..." oninput="filterEmojis()">
                             <div id="emoji-list"></div>
                         </div>
                     </div>
@@ -181,26 +232,57 @@
             shark: { name: 'Shark Pack', cost: 1000n, pool: [{ name: 'Megalodon', rarity: 'Chroma', img: '🦈' },{ name: 'Great White Shark', rarity: 'Legendary', img: '🦈' },{ name: 'Hammerhead Shark', rarity: 'Epic', img: '🔨' },{ name: 'Mako Shark', rarity: 'Rare', img: '💨' },{ name: 'Reef Shark', rarity: 'Common', img: '🌊' }] }
         };
 
-        // --- AUTH & CORE ---
-        function handleAuth() {
-            const u = document.getElementById('user-input').value.trim();
-            if(!u) return alert("Enter Username");
-            currentUser = u;
-            const saved = localStorage.getItem('bd_user_' + u);
-            if(saved) {
-                const p = JSON.parse(saved);
-                userData = { tokens: BigInt(p.tokens), inventory: p.inventory, lastClaim: p.lastClaim };
-            } else {
-                userData = { tokens: 50000n, inventory: [], lastClaim: Date.now() };
-                saveData();
+        // --- SCREEN CONTROL ---
+        function initLanding() {
+            const container = document.getElementById('bg-blooks');
+            const icons = ["🐶","🐙","🦈","⚛️","🔥","💎","👑"];
+            for(let i=0; i<15; i++) {
+                const el = document.createElement('div');
+                el.className = 'float-blook';
+                el.innerText = icons[Math.floor(Math.random()*icons.length)];
+                el.style.left = Math.random()*100 + "vw";
+                el.style.top = Math.random()*100 + "vh";
+                el.style.animationDelay = (Math.random()*5) + "s";
+                container.appendChild(el);
             }
+        }
+
+        function openAuth(mode) {
+            document.getElementById('landing-screen').style.display = mode === 'landing' ? 'flex' : 'none';
+            document.getElementById('login-screen').style.display = mode === 'login' ? 'flex' : 'none';
+            document.getElementById('signup-screen').style.display = mode === 'signup' ? 'flex' : 'none';
+        }
+
+        function handleSignup() {
+            const u = document.getElementById('signup-user').value.trim();
+            const p = document.getElementById('signup-pass').value.trim();
+            if(!u || !p) return alert("Fill all fields");
+            if(localStorage.getItem('bd_user_' + u)) return alert("User already exists!");
+            
+            currentUser = u;
+            userData = { tokens: 50000n, inventory: [], lastClaim: Date.now() };
+            saveData();
+            launch();
+        }
+
+        function handleLogin() {
+            const u = document.getElementById('login-user').value.trim();
+            const p = document.getElementById('login-pass').value.trim();
+            const saved = localStorage.getItem('bd_user_' + u);
+            if(!saved) return alert("User not found");
+            
+            const data = JSON.parse(saved);
+            currentUser = u;
+            userData = { tokens: BigInt(data.tokens), inventory: data.inventory, lastClaim: data.lastClaim };
             launch();
         }
 
         function continueAsGuest() { currentUser = null; userData = { tokens: 50000n, inventory: [], lastClaim: Date.now() }; launch(); }
 
         function launch() {
-            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('landing-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('signup-screen').style.display = 'none';
             document.getElementById('game-ui').style.display = 'block';
             document.getElementById('user-display').innerText = currentUser || "Guest";
             initMarket();
@@ -215,7 +297,7 @@
             localStorage.setItem('bd_user_' + currentUser, JSON.stringify(d));
         }
 
-        // --- CREATOR & EMOJI SEARCH ---
+        // --- CREATOR & SEARCH ---
         function filterEmojis() {
             const term = document.getElementById('emoji-search').value;
             renderEmojiGrid(term);
@@ -225,25 +307,14 @@
             const container = document.getElementById('emoji-list');
             container.innerHTML = '';
             const searchTerm = filter.toLowerCase();
-
             for (let cat in emojiCategories) {
-                const filteredEmojis = emojiCategories[cat].filter(emoji => 
-                    cat.toLowerCase().includes(searchTerm) || searchTerm === ""
-                );
-
-                if (filteredEmojis.length > 0) {
-                    const title = document.createElement('h4');
-                    title.innerText = cat;
-                    title.style.margin = "15px 0 5px 0";
-                    title.style.color = "var(--primary)";
+                const filtered = emojiCategories[cat].filter(e => cat.toLowerCase().includes(searchTerm) || searchTerm === "");
+                if (filtered.length > 0) {
+                    const title = document.createElement('h4'); title.innerText = cat; title.style.color = "var(--primary)";
                     container.appendChild(title);
-                    
-                    const grid = document.createElement('div');
-                    grid.className = 'emoji-grid';
-                    filteredEmojis.forEach(emoji => {
-                        const el = document.createElement('div');
-                        el.className = 'emoji-item';
-                        el.innerText = emoji;
+                    const grid = document.createElement('div'); grid.className = 'emoji-grid';
+                    filtered.forEach(emoji => {
+                        const el = document.createElement('div'); el.className = 'emoji-item'; el.innerText = emoji;
                         el.onclick = () => { document.getElementById('custom-emoji').value = emoji; };
                         grid.appendChild(el);
                     });
@@ -256,46 +327,17 @@
             const name = document.getElementById('custom-name').value;
             const emoji = document.getElementById('custom-emoji').value;
             const price = document.getElementById('custom-price').value;
-            if(!name || !emoji || !price || !currentUser) return alert("Fill all info!");
-            
-            const newBlook = { name: name, img: emoji, rarity: 'Custom', price: price, creator: currentUser, id: Date.now() };
+            if(!name || !emoji || !price || !currentUser) return alert("Must be logged in to list on market!");
+            const newBlook = { name, img: emoji, rarity: 'Custom', price, creator: currentUser, id: Date.now() };
             communityBlooks.push(newBlook);
             localStorage.setItem('bd_community_market', JSON.stringify(communityBlooks));
             userData.inventory.unshift(newBlook);
             saveData();
-            alert("Blook Created!");
+            alert("Listed!");
             showSection('market', document.querySelector('.nav-btn'));
         }
 
-        // --- MARKET & COLLECTION ---
-        function renderCommunity() {
-            const grid = document.getElementById('community-grid');
-            grid.innerHTML = '';
-            communityBlooks.forEach(b => {
-                const card = document.createElement('div');
-                card.className = 'pack-card';
-                card.innerHTML = `<div style="font-size:40px">${b.img}</div><h3>${b.name}</h3><p>${b.price} Tokens</p><small>By: ${b.creator}</small>`;
-                card.onclick = () => buyCommunity(b);
-                grid.appendChild(card);
-            });
-        }
-
-        function buyCommunity(blook) {
-            const price = BigInt(blook.price);
-            if(userData.tokens < price) return alert("Not enough tokens!");
-            if(blook.creator === currentUser) return alert("You made this!");
-
-            const creatorSave = JSON.parse(localStorage.getItem('bd_user_' + blook.creator));
-            if(creatorSave) {
-                creatorSave.tokens = (BigInt(creatorSave.tokens) + price).toString();
-                localStorage.setItem('bd_user_' + blook.creator, JSON.stringify(creatorSave));
-            }
-
-            userData.tokens -= price;
-            userData.inventory.unshift({...blook});
-            updateUI(); saveData(); alert("Bought!");
-        }
-
+        // --- CORE GAME MECHANICS ---
         function initMarket() {
             const list = document.getElementById('pack-list');
             list.innerHTML = '';
@@ -304,13 +346,9 @@
                 const card = document.createElement('div');
                 card.className = 'pack-card';
                 card.innerHTML = `<h3>${p.name}</h3><p>${p.cost} Tokens</p>`;
-                
                 const select = document.createElement('select');
-                select.className = 'owner-select-menu';
-                select.id = 'select-' + key;
-                select.style.display = isOwner ? 'block' : 'none';
+                select.id = 'select-' + key; select.style.display = isOwner ? 'block' : 'none';
                 p.pool.forEach((b, i) => { select.innerHTML += `<option value="${i}">${b.name}</option>`; });
-                
                 card.onclick = (e) => { if(e.target.tagName !== 'SELECT') openPack(key); };
                 card.appendChild(select);
                 list.appendChild(card);
@@ -331,10 +369,8 @@
         function triggerReveal(blook) {
             const overlay = document.getElementById('reveal-overlay');
             const container = document.getElementById('reveal-container');
-            const btn = document.getElementById('close-reveal-btn');
             const info = rarityInfo[blook.rarity];
-            overlay.style.display = 'flex';
-            container.innerHTML = ''; btn.style.display = 'none';
+            overlay.style.display = 'flex'; container.innerHTML = '';
             const card = document.createElement('div');
             card.className = `blook-card ${info.anim} ${blook.rarity === 'Exclusive' ? 'rarity-exclusive' : ''}`;
             card.style.width = '200px';
@@ -342,7 +378,7 @@
             card.innerHTML = `<div style="font-size:80px;">${blook.img}</div><h2>${blook.name}</h2><b style="color:${info.color === 'rainbow' ? 'white' : info.color}">${blook.rarity.toUpperCase()}</b>`;
             container.appendChild(card);
             createConfetti(blook.rarity);
-            setTimeout(() => { btn.style.display = 'block'; }, 1200);
+            setTimeout(() => { document.getElementById('close-reveal-btn').style.display = 'block'; }, 1200);
         }
 
         function createConfetti(rarity) {
@@ -359,33 +395,8 @@
             }
         }
 
-        function closeReveal() { document.getElementById('reveal-overlay').style.display = 'none'; }
-        function toggleSpam() { isSpamming = !isSpamming; document.getElementById('spam-btn').innerText = `Spam Open: ${isSpamming ? 'ON' : 'OFF'}`; }
-
-        function redeem() {
-            const code = document.getElementById('promo-input').value.toUpperCase();
-            if(usedCodes.includes(code)) return alert("Used!");
-            if(code === 'BRA1NR0TJANDUL') {
-                usedCodes.push(code);
-                const ex = [{ name: 'Jandul Dul Dul', img: '🤡', rarity: 'Exclusive' },{ name: 'Raccooni Jandelini', img: '🦝', rarity: 'Exclusive' }];
-                const pull = ex[Math.floor(Math.random() * ex.length)];
-                userData.inventory.unshift(pull); updateUI(); saveData(); triggerReveal(pull);
-            }
-        }
-
-        function checkClaim() { if(Date.now() - userData.lastClaim >= TEN_DAYS) document.getElementById('claim-btn').style.display = 'block'; }
-        function claimDaily() { userData.tokens += 50000n; userData.lastClaim = Date.now(); document.getElementById('claim-btn').style.display = 'none'; updateUI(); saveData(); }
-
-        function activateOwner() {
-            if(prompt("Code:") === 'ownerblkt') {
-                isOwner = true; userData.tokens = DECILLION;
-                document.getElementById('spam-btn').style.display = 'block';
-                initMarket(); updateUI();
-            }
-        }
-
+        function closeReveal() { document.getElementById('reveal-overlay').style.display = 'none'; document.getElementById('close-reveal-btn').style.display = 'none'; }
         function updateUI() { document.getElementById('token-display').innerText = userData.tokens.toLocaleString(); }
-
         function showSection(id, btn) {
             document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'block';
@@ -403,24 +414,22 @@
                 const card = document.createElement('div');
                 card.className = 'blook-card ' + (item.rarity === 'Exclusive' ? 'rarity-exclusive' : '');
                 card.style.borderBottomColor = info.color === 'rainbow' ? 'transparent' : info.color;
-                card.innerHTML = `<button class="sell-btn" onclick="sellOne(${index})">X</button>
-                                  <div style="font-size:45px;">${item.img}</div>
-                                  <b>${item.name}</b><br>
-                                  <small style="color: #7f8c8d;">Sell: ${info.sell.toLocaleString()}</small>`;
+                card.innerHTML = `<button class="sell-btn" onclick="sellOne(${index})">X</button><div style="font-size:45px;">${item.img}</div><b>${item.name}</b><br><small>Sell: ${info.sell.toLocaleString()}</small>`;
                 grid.appendChild(card);
             });
         }
 
-        function sellOne(index) {
-            const item = userData.inventory[index];
-            userData.tokens += rarityInfo[item.rarity].sell;
-            userData.inventory.splice(index, 1);
-            updateUI(); saveData(); renderInv();
-        }
-
-        function sellAll() {
-            userData.inventory.forEach(item => { userData.tokens += rarityInfo[item.rarity].sell; });
-            userData.inventory = []; updateUI(); saveData(); renderInv();
+        function sellOne(i) { userData.tokens += rarityInfo[userData.inventory[i].rarity].sell; userData.inventory.splice(i, 1); updateUI(); saveData(); renderInv(); }
+        function sellAll() { userData.inventory.forEach(item => { userData.tokens += rarityInfo[item.rarity].sell; }); userData.inventory = []; updateUI(); saveData(); renderInv(); }
+        function claimDaily() { userData.tokens += 50000n; userData.lastClaim = Date.now(); document.getElementById('claim-btn').style.display = 'none'; updateUI(); saveData(); }
+        function checkClaim() { if(Date.now() - userData.lastClaim >= TEN_DAYS) document.getElementById('claim-btn').style.display = 'block'; }
+        
+        function activateOwner() {
+            if(prompt("Code:") === 'ownerblkt') {
+                isOwner = true; userData.tokens = DECILLION;
+                document.getElementById('spam-btn').style.display = 'block';
+                initMarket(); updateUI();
+            }
         }
     </script>
 </body>
