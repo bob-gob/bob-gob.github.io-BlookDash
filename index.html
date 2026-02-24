@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BlookDash | Version 29.0</title>
+    <title>BlookDash | Version 30.0</title>
     <style>
         :root {
             --primary: #3498db; --dark-bg: #0b101b; --sidebar-bg: #161d2b;
@@ -10,47 +10,36 @@
             --warning: #f1c40f; --chroma: #00FBFF; --epic: #a335ee; --legendary: #ff8000;
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--dark-bg); color: white; overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; overflow: hidden; }
 
         #sidebar { width: 260px; background: var(--sidebar-bg); height: 100vh; display: flex; flex-direction: column; padding: 25px; border-right: 2px solid #2c3e50; float: left; box-sizing: border-box; }
-        .nav-btn { background: none; border: none; color: #bdc3c7; text-align: left; padding: 14px; font-size: 18px; cursor: pointer; border-radius: 10px; margin-bottom: 10px; width: 100%; transition: all 0.2s ease; }
+        .nav-btn { background: none; border: none; color: #bdc3c7; text-align: left; padding: 14px; font-size: 16px; cursor: pointer; border-radius: 10px; margin-bottom: 8px; width: 100%; transition: 0.2s; }
         .nav-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3); }
 
         #main-content { margin-left: 260px; padding: 40px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
 
-        .pack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
-        .pack-card { background: var(--card-bg); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid #2c3e50; transition: transform 0.2s; position: relative; }
-        .pack-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .pack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; border: 2px solid #2c3e50; }
         
-        .chat-container { height: 400px; background: #050505; border-radius: 15px; display: flex; flex-direction: column; border: 1px solid #333; }
-        #chat-display { flex: 1; overflow-y: auto; padding: 15px; font-size: 14px; line-height: 1.6; }
-        .chat-input-row { display: flex; padding: 15px; border-top: 1px solid #333; gap: 10px; }
-        .chat-input-row input { flex: 1; background: #1a1a1a; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; outline: none; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; align-items: center; justify-content: center; flex-direction: column; }
-        .reveal-anim { animation: blookPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes blookPop { from { transform: scale(0) rotate(-20deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
-
-        #game-canvas { background: #70c5ce; border: 5px solid #fff; border-radius: 15px; display: block; margin: 0 auto;}
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; }
+        input, textarea { background: #222; border: 1px solid #444; color: white; padding: 12px; border-radius: 8px; margin: 5px; width: 80%; }
         
-        /* Trade Styles */
-        .trade-panel { background: #111; padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px; }
-        .trade-input { padding: 10px; border-radius: 5px; border: 1px solid #444; background: #222; color: white; margin-right: 10px; }
+        #console-log { background: #000; color: #0f0; font-family: 'Courier New', monospace; padding: 10px; height: 150px; overflow-y: auto; text-align: left; font-size: 12px; border-radius: 5px; margin-top: 10px; }
     </style>
 </head>
 <body onload="init()">
 
-    <div id="splash-screen" style="position:fixed; width:100%; height:100%; background: #000; z-index:100; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <h1 style="font-size:90px; color:var(--primary); margin:0;">BlookDash</h1>
-        <button class="nav-btn" style="background:var(--success); color:white; width:250px; text-align:center; font-weight:bold;" onclick="openAuth()">ENTER DASH</button>
+    <div id="splash" style="position:fixed; width:100%; height:100%; background:#000; z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <h1 style="font-size:80px; color:var(--primary);">BlookDash</h1>
+        <button class="nav-btn" style="background:var(--success); color:white; width:220px; text-align:center;" onclick="document.getElementById('auth-modal').style.display='flex'">LOGIN</button>
     </div>
 
-    <div id="auth-screen" class="modal">
-        <div style="background:var(--sidebar-bg); padding:40px; border-radius:25px; width:350px; border:2px solid var(--primary); text-align:center;">
-            <h2 style="margin-bottom:25px;">Account Login</h2>
-            <input type="text" id="user-input" placeholder="Username" style="width:100%; padding:12px; margin-bottom:15px;">
-            <input type="password" id="pass-input" placeholder="Password" style="width:100%; padding:12px; margin-bottom:25px;">
-            <button onclick="auth()" class="nav-btn" style="background:var(--primary); color:white; width:100%; text-align:center;">Launch</button>
+    <div id="auth-modal" class="modal">
+        <div style="background:var(--sidebar-bg); padding:40px; border-radius:25px; border:2px solid var(--primary); text-align:center; width:350px;">
+            <h2>Account Access</h2>
+            <input type="text" id="user-in" placeholder="Username">
+            <input type="password" id="pass-in" placeholder="Password">
+            <button onclick="auth()" class="nav-btn" style="background:var(--primary); color:white; text-align:center;">Launch</button>
         </div>
     </div>
 
@@ -58,15 +47,14 @@
         <div id="sidebar">
             <h2 style="color:var(--primary);">BlookDash</h2>
             <button class="nav-btn active" onclick="tab('market', this)">🛒 Market</button>
-            <button class="nav-btn" onclick="tab('community', this)">💬 Community</button>
             <button class="nav-btn" onclick="tab('collection', this)">🎒 Collection</button>
             <button class="nav-btn" onclick="tab('trade', this)">🔄 Trading</button>
-            <button class="nav-btn" onclick="tab('game-center', this)">🕹️ Games</button>
+            <button class="nav-btn" onclick="tab('promo', this)">⌨️ Dev Console</button>
             
             <div style="margin-top:auto;">
-                <button onclick="claimDaily()" class="nav-btn" style="background:var(--epic); color:white; text-align:center;">🎁 Daily 1,000</button>
-                <p>BALANCE: <b id="stat-tokens" style="color:var(--warning); font-size:22px;">0</b></p>
-                <button onclick="location.reload()" class="nav-btn" style="background:var(--danger); color:white; text-align:center;">Logout</button>
+                <p style="font-size:12px; color:#666;">TOKENS</p>
+                <b id="stat-tokens" style="color:var(--warning); font-size:24px;">0</b>
+                <button onclick="location.reload()" class="nav-btn" style="background:var(--danger); color:white; margin-top:15px; text-align:center;">Logout</button>
             </div>
         </div>
 
@@ -76,149 +64,74 @@
                 <div id="pack-list" class="pack-grid"></div>
             </div>
 
-            <div id="community" class="tab" style="display:none;">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
-                    <div>
-                        <h1>Global Chat</h1>
-                        <div class="chat-container">
-                            <div id="chat-display"></div>
-                            <div class="chat-input-row">
-                                <input type="text" id="chat-msg" placeholder="Type here...">
-                                <button onclick="sendChat()" style="background:var(--primary); color:white; border:none; padding:10px; cursor:pointer;">Send</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h1>Community Items</h1>
-                        <div id="community-list" class="pack-grid"></div>
-                    </div>
+            <div id="promo" class="tab" style="display:none; text-align:center;">
+                <h1>Developer Console</h1>
+                <div style="background:rgba(0,0,0,0.5); padding:25px; border-radius:15px; max-width:500px; margin:0 auto;">
+                    <textarea id="console-input" placeholder="Enter Command..." rows="3"></textarea>
+                    <button onclick="runCommand()" class="nav-btn" style="background:var(--primary); color:white; text-align:center;">Execute Script</button>
+                    <div id="console-log">System Ready... Type commands above.</div>
                 </div>
             </div>
 
             <div id="trade" class="tab" style="display:none;">
-                <h1>Trading Center</h1>
-                <div class="trade-panel">
-                    <h3>Send Tokens</h3>
-                    <input type="text" id="trade-user" class="trade-input" placeholder="Recipient Username">
-                    <input type="number" id="trade-amount" class="trade-input" placeholder="Amount">
-                    <button onclick="sendTradeTokens()" class="nav-btn" style="background:var(--success); color:white; width:auto; display:inline-block; padding:10px 20px;">Send Tokens</button>
-                </div>
-                <h3>Send Blooks</h3>
-                <p>Click a Blook in your collection to send it to someone!</p>
-                <input type="text" id="trade-blook-user" class="trade-input" placeholder="Recipient Username" style="width:300px; margin-bottom:20px;">
-                <div id="trade-blook-list" class="pack-grid"></div>
+                <h1>Trading</h1>
+                <input type="text" id="t-user" placeholder="Recipient Username">
+                <input type="number" id="t-amt" placeholder="Amount">
+                <button onclick="tradeTokens()" style="background:var(--success); color:white; border:none; padding:12px; border-radius:8px;">Send</button>
+                <div id="trade-blook-list" class="pack-grid" style="margin-top:20px;"></div>
             </div>
 
-            <div id="collection" class="tab" style="display:none;">
+            <div id="collection" class="tab">
                 <h1>Collection</h1>
-                <div id="blook-list" class="pack-grid"></div>
-            </div>
-
-            <div id="game-center" class="tab" style="display:none; text-align:center;">
-                <h1>Flappy Blook</h1>
-                <canvas id="game-canvas" width="400" height="400"></canvas><br>
-                <button onclick="resetGame()" class="nav-btn" style="background:var(--success); width:200px; display:inline-block; text-align:center; margin-top:20px;">Start Game</button>
+                <div id="inv-list" class="pack-grid"></div>
             </div>
         </div>
     </div>
 
     <div id="reveal-modal" class="modal">
-        <div id="reveal-container" class="reveal-anim" style="text-align:center;">
+        <div style="text-align:center;">
             <div id="reveal-img" style="font-size:150px;"></div>
             <h1 id="reveal-name"></h1>
             <h2 id="reveal-rarity"></h2>
+            <button onclick="document.getElementById('reveal-modal').style.display='none'" class="nav-btn" style="background:var(--primary); color:white; width:150px; text-align:center;">OK</button>
         </div>
-        <button onclick="closeModal()" class="nav-btn" style="background:var(--primary); color:white; width:150px; margin-top:30px; text-align:center;">OK</button>
     </div>
 
     <script>
         let user = null;
-        let data = { tokens: 5000n, inventory: [], pass: "", lastDaily: 0 };
-        let chatHistory = [];
+        let data = { tokens: 5000n, inventory: [] };
 
         const packs = [
-            { name: 'Medieval Pack', icon: '🏰', cost: 1000n, pool: [{name:'Peasant', rarity:'Common', img:'👨‍🌾'}, {name:'Knight', rarity:'Rare', img:'🤺'}, {name:'Wizard', rarity:'Epic', img:'🧙'}, {name:'King', rarity:'Legendary', img:'👑'}, {name:'Dragon', rarity:'Chroma', img:'🐉'}] },
-            { name: 'Shark Pack', icon: '🦈', cost: 1000n, pool: [{name:'Reef Shark', rarity:'Common', img:'🐟'}, {name:'Mako Shark', rarity:'Rare', img:'🦈'}, {name:'Hammerhead', rarity:'Epic', img:'🔨'}, {name:'Great White', rarity:'Legendary', img:'🦈'}, {name:'Megalodon', rarity:'Chroma', img:'🦖'}] },
-            { name: 'Aquatic Pack', icon: '🌊', cost: 1000n, pool: [{name:'Clownfish', rarity:'Common', img:'🐠'}, {name:'Sea Turtle', rarity:'Rare', img:'🐢'}, {name:'Giant Squid', rarity:'Epic', img:'🦑'}, {name:'Blue Whale', rarity:'Legendary', img:'🐋'}, {name:'Kraken', rarity:'Chroma', img:'🐙'}] }
+            { name: 'Medieval', icon: '🏰', cost: 1000n, pool: [{name:'Peasant', rarity:'Common', img:'👨‍🌾'}, {name:'King', rarity:'Legendary', img:'👑'}] },
+            { name: 'Aquatic', icon: '🌊', cost: 1000n, pool: [{name:'Fish', rarity:'Common', img:'🐠'}, {name:'Kraken', rarity:'Chroma', img:'🐙'}] },
+            { name: 'Exclusive', icon: '💎', cost: 50000n, pool: [{name:'Raccooni', rarity:'Exclusive', img:'🦝'}] }
         ];
 
-        /* CORE FUNCTIONS */
-        function openAuth() { document.getElementById('auth-screen').style.display = 'flex'; }
-
         function auth() {
-            const u = document.getElementById('user-input').value.trim();
-            const p = document.getElementById('pass-input').value.trim();
-            if(!u || !p) return;
-            const saved = localStorage.getItem('bd_user_' + u);
+            const u = document.getElementById('user-in').value.trim();
+            const p = document.getElementById('pass-in').value.trim();
+            if(!u) return;
+            const saved = localStorage.getItem('bd_usr_' + u);
             if(saved) {
                 const parsed = JSON.parse(saved);
-                if(parsed.pass !== p) return alert("Wrong Password!");
-                user = u; data.pass = p;
-                data.tokens = BigInt(parsed.tokens);
-                data.inventory = parsed.inventory || [];
-                data.lastDaily = parsed.lastDaily || 0;
+                if(parsed.pass !== p) return alert("Wrong Password");
+                user = u; data.tokens = BigInt(parsed.tokens); data.inventory = parsed.inventory;
             } else { user = u; data.pass = p; save(); }
-            document.getElementById('splash-screen').style.display = 'none';
-            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('splash').style.display = 'none';
+            document.getElementById('auth-modal').style.display = 'none';
             document.getElementById('game-ui').style.display = 'block';
             updateUI(); renderPacks();
         }
 
         function save() {
             if(!user) return;
-            localStorage.setItem('bd_user_' + user, JSON.stringify({tokens:data.tokens.toString(), inventory:data.inventory, pass:data.pass, lastDaily:data.lastDaily}));
+            localStorage.setItem('bd_usr_' + user, JSON.stringify({tokens: data.tokens.toString(), inventory: data.inventory, pass: data.pass}));
         }
 
-        /* TRADING LOGIC */
-        function sendTradeTokens() {
-            const target = document.getElementById('trade-user').value.trim();
-            const amount = BigInt(document.getElementById('trade-amount').value || 0);
-            if(target === user) return alert("You can't trade with yourself!");
-            if(data.tokens < amount || amount <= 0n) return alert("Invalid amount!");
-
-            const targetData = localStorage.getItem('bd_user_' + target);
-            if(!targetData) return alert("User not found!");
-
-            const parsed = JSON.parse(targetData);
-            parsed.tokens = (BigInt(parsed.tokens) + amount).toString();
-            localStorage.setItem('bd_user_' + target, JSON.stringify(parsed));
-
-            data.tokens -= amount;
-            updateUI(); save();
-            alert(`Sent ${amount.toLocaleString()} tokens to ${target}!`);
-        }
-
-        function sendTradeBlook(index) {
-            const target = document.getElementById('trade-blook-user').value.trim();
-            if(!target || target === user) return alert("Invalid username!");
-            
-            const targetData = localStorage.getItem('bd_user_' + target);
-            if(!targetData) return alert("User not found!");
-
-            const item = data.inventory[index];
-            const parsed = JSON.parse(targetData);
-            parsed.inventory.unshift(item);
-            localStorage.setItem('bd_user_' + target, JSON.stringify(parsed));
-
-            data.inventory.splice(index, 1);
-            renderTradeBlooks();
-            save();
-            alert(`Sent ${item.name} to ${target}!`);
-        }
-
-        function renderTradeBlooks() {
-            document.getElementById('trade-blook-list').innerHTML = data.inventory.map((b, i) => `
-                <div class="pack-card" onclick="sendTradeBlook(${i})" style="cursor:pointer;">
-                    <div style="font-size:40px;">${b.img}</div>
-                    <b>${b.name}</b>
-                </div>`).join('');
-        }
-
-        /* MARKET LOGIC */
         function buyPack(i, amt) {
-            let total = packs[i].cost * BigInt(amt);
-            if(data.tokens < total) return alert("No tokens!");
-            data.tokens -= total;
+            let cost = packs[i].cost * BigInt(amt);
+            if(data.tokens < cost) return;
+            data.tokens -= cost;
             for(let a=0; a<amt; a++){
                 let res = packs[i].pool[Math.floor(Math.random()*packs[i].pool.length)];
                 data.inventory.unshift(res);
@@ -227,17 +140,46 @@
             updateUI(); save();
         }
 
+        /* DEVELOPER COMMANDS */
+        function runCommand() {
+            const cmd = document.getElementById('console-input').value;
+            const log = document.getElementById('console-log');
+            try {
+                if(cmd.startsWith("addTokens")) {
+                    let amt = BigInt(cmd.match(/\d+/)[0]);
+                    data.tokens += amt;
+                    log.innerHTML += `<br>> Added ${amt.toLocaleString()} tokens.`;
+                } else if(cmd === "unlockAll") {
+                    data.inventory.push({name:'Kraken', rarity:'Chroma', img:'🐙'}, {name:'King', rarity:'Legendary', img:'👑'});
+                    log.innerHTML += `<br>> Unlocked starter rares.`;
+                } else if(cmd === "clearInv") {
+                    data.inventory = [];
+                    log.innerHTML += `<br>> Inventory wiped.`;
+                } else {
+                    log.innerHTML += `<br>> Error: Command not recognized.`;
+                }
+                updateUI(); save();
+            } catch(e) { log.innerHTML += `<br>> Syntax Error.`; }
+            document.getElementById('console-input').value = "";
+        }
+
         function renderPacks() {
             document.getElementById('pack-list').innerHTML = packs.map((p, i) => `
-                <div class="pack-card">
-                    <div style="font-size:50px;">${p.icon}</div>
+                <div class="card">
+                    <div style="font-size:40px;">${p.icon}</div>
                     <h3>${p.name}</h3>
-                    <button onclick="buyPack(${i}, 1)" style="padding:5px; width:45%; cursor:pointer;">1</button>
-                    <button onclick="buyPack(${i}, 10)" style="padding:5px; width:45%; background:var(--warning); cursor:pointer;">Spam 10</button>
+                    <button onclick="buyPack(${i}, 1)">Open</button>
+                    <button onclick="buyPack(${i}, 10)" style="background:var(--warning)">Spam 10</button>
                 </div>`).join('');
         }
 
-        /* TABBING & UI */
+        function updateUI() { document.getElementById('stat-tokens').innerText = data.tokens.toLocaleString(); }
+        function showReveal(b) {
+            document.getElementById('reveal-modal').style.display='flex';
+            document.getElementById('reveal-img').innerText=b.img;
+            document.getElementById('reveal-name').innerText=b.name;
+            document.getElementById('reveal-rarity').innerText=b.rarity;
+        }
         function tab(id, btn) {
             document.querySelectorAll('.tab').forEach(t => t.style.display='none');
             document.getElementById(id).style.display='block';
@@ -246,45 +188,10 @@
             if(id === 'collection') renderInv();
             if(id === 'trade') renderTradeBlooks();
         }
-
         function renderInv() {
-            document.getElementById('blook-list').innerHTML = data.inventory.map(b => `
-                <div class="pack-card">
-                    <div style="font-size:40px;">${b.img}</div>
-                    <b>${b.name}</b><br><small>${b.rarity}</small>
-                </div>`).join('');
+            document.getElementById('inv-list').innerHTML = data.inventory.map(b => `<div class="card"><div>${b.img}</div><b>${b.name}</b></div>`).join('');
         }
-
-        function showReveal(b) {
-            document.getElementById('reveal-modal').style.display = 'flex';
-            document.getElementById('reveal-img').innerText = b.img;
-            document.getElementById('reveal-name').innerText = b.name;
-            document.getElementById('reveal-rarity').innerText = b.rarity;
-        }
-
-        function closeModal() { document.getElementById('reveal-modal').style.display = 'none'; }
-        function updateUI() { document.getElementById('stat-tokens').innerText = data.tokens.toLocaleString(); }
-        function claimDaily() {
-            const now = Date.now();
-            if(now - data.lastDaily < 86400000) return alert("Not yet!");
-            data.tokens += 1000n; data.lastDaily = now; updateUI(); save();
-        }
-
-        /* FLAPPY */
-        const cvs = document.getElementById('game-canvas'), ctx = cvs.getContext('2d');
-        let bird, active = false;
-        function resetGame() { bird = { x: 50, y: 200, v: 0, g: 0.25 }; active = true; }
-        function gameLoop() {
-            ctx.clearRect(0,0,400,400);
-            if(active) {
-                bird.v += bird.g; bird.y += bird.v;
-                if(bird.y > 400 || bird.y < 0) active = false;
-                ctx.fillStyle = "yellow"; ctx.fillRect(bird.x, bird.y, 25, 25);
-            }
-            requestAnimationFrame(gameLoop);
-        }
-        window.onkeydown = (e) => { if(e.code === "Space") bird.v = -5.5; };
-        function init() { gameLoop(); }
+        function init() {}
     </script>
 </body>
 </html>
