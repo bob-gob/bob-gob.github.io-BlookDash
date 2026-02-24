@@ -2,342 +2,272 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlookDash | Version 22.0</title>
+    <title>BlookDash | 24.0</title>
     <style>
         :root {
             --primary: #3498db; --dark-bg: #0b101b; --sidebar-bg: #161d2b;
             --card-bg: #1c2331; --danger: #e74c3c; --success: #2ecc71;
-            --warning: #f1c40f; --chroma-blue: #00FBFF;
+            --warning: #f1c40f; --chroma: #00FBFF;
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; overflow: hidden; user-select: none; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; overflow: hidden; }
 
-        /* --- SIDEBAR & LAYOUT --- */
-        #game-ui { display: none; height: 100vh; width: 100vw; }
-        #sidebar { width: 240px; background: var(--sidebar-bg); height: 100%; display: flex; flex-direction: column; padding: 20px; border-right: 2px solid #2c3e50; float: left; box-sizing: border-box;}
+        /* --- UI LAYOUT --- */
+        #sidebar { width: 240px; background: var(--sidebar-bg); height: 100vh; display: flex; flex-direction: column; padding: 20px; border-right: 2px solid #2c3e50; float: left; box-sizing: border-box; }
+        #main-content { margin-left: 240px; padding: 40px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
         .nav-btn { background: none; border: none; color: #bdc3c7; text-align: left; padding: 12px; font-size: 18px; cursor: pointer; border-radius: 8px; margin-bottom: 8px; width: 100%; transition: 0.2s; }
         .nav-btn.active { background: var(--primary); color: white; }
-        .nav-btn:hover { background: rgba(52, 152, 219, 0.2); }
-        
-        #main-content { margin-left: 240px; padding: 40px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
-        .stats-bar { background: var(--sidebar-bg); padding: 15px 30px; border-radius: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); }
-
-        /* --- MARKET & COLLECTION --- */
-        .pack-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .pack-card { background: var(--sidebar-bg); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid #2c3e50; cursor: pointer; transition: 0.3s; }
-        .pack-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .pack-icon { font-size: 50px; margin-bottom: 10px; }
-        
-        .blook-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .blook-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; border-bottom: 5px solid gray; position: relative; }
-        .sell-btn { position: absolute; top: 5px; right: 5px; background: var(--danger); border: none; color: white; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); }
 
         /* --- GAME CENTER --- */
-        #flappy-container { display: none; position: relative; width: 600px; height: 400px; margin: 20px auto; background: #70c5ce; border: 4px solid white; border-radius: 10px; overflow: hidden; cursor: pointer; }
-        #game-over { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; flex-direction:column; align-items:center; justify-content:center; }
+        #flappy-container { display: none; position: relative; background: #70c5ce; border: 4px solid white; border-radius: 15px; margin: 20px auto; overflow: hidden; width: 600px; height: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #game-over { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; flex-direction:column; align-items:center; justify-content:center; z-index: 10; }
 
-        /* --- AUTH --- */
-        #landing-screen, #login-screen, #signup-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1c2331 0%, #0b101b 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; }
-        .auth-container { background: var(--sidebar-bg); padding: 40px; border-radius: 20px; width: 350px; text-align: center; border: 1px solid #2c3e50; }
-        .auth-input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #2c3e50; background: #0b101b; color: white; box-sizing: border-box; }
-        
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; justify-content: center; align-items: center; flex-direction: column; }
+        /* --- MARKET & ANIMATIONS --- */
+        .pack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .pack-card { background: var(--sidebar-bg); padding: 20px; border-radius: 15px; text-align: center; border: 2px solid #2c3e50; cursor: pointer; transition: 0.2s; }
+        @keyframes blookPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .animate-pop { animation: blookPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        /* --- OWNER PANEL --- */
+        #owner-panel { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.9); border: 2px solid var(--warning); padding: 15px; border-radius: 10px; display: none; z-index: 50000; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 20000; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body onload="init()">
 
-    <div id="landing-screen">
-        <h1 style="font-size: 80px; margin-bottom: 20px;">BlookDash</h1>
-        <button onclick="openAuth('login')" class="nav-btn" style="background:var(--primary); width:200px; text-align:center; color:white;">Login</button>
-        <button onclick="openAuth('signup')" class="nav-btn" style="background:var(--success); width:200px; text-align:center; color:white;">Sign Up</button>
-        <button onclick="forcePassReset()" style="background:none; border:none; color:gray; cursor:pointer; text-decoration:underline; margin-top:20px;">Force Fix Password to 3Pasword3</button>
-    </div>
-
-    <div id="login-screen" style="display:none;">
-        <div class="auth-container">
-            <h2>Login</h2>
-            <input type="text" id="login-user" class="auth-input" placeholder="Username">
-            <input type="password" id="login-pass" class="auth-input" placeholder="Password">
-            <button onclick="handleLogin()" class="nav-btn" style="background:var(--primary); color:white; text-align:center;">Enter</button>
-            <p onclick="openAuth('landing')" style="cursor:pointer; font-size:12px; margin-top:10px;">Back</p>
+    <div id="auth-screen" style="position:fixed; width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--dark-bg); z-index:10000;">
+        <div style="background:var(--sidebar-bg); padding:40px; border-radius:20px; width:300px; text-align:center;">
+            <h1>BlookDash</h1>
+            <input type="text" id="user-input" placeholder="Username" style="width:100%; padding:10px; margin:10px 0;">
+            <input type="password" id="pass-input" placeholder="Password" style="width:100%; padding:10px; margin:10px 0;">
+            <button onclick="auth('login')" class="nav-btn" style="background:var(--primary); color:white; text-align:center;">Login</button>
+            <button onclick="auth('signup')" class="nav-btn" style="background:var(--success); color:white; text-align:center;">Sign Up</button>
+            <button onclick="fixAgentFox()" style="background:none; border:none; color:gray; cursor:pointer; text-decoration:underline; font-size:12px; margin-top:10px;">Fix AgentFox212 Password</button>
         </div>
     </div>
 
-    <div id="signup-screen" style="display:none;">
-        <div class="auth-container">
-            <h2>Sign Up</h2>
-            <p style="font-size:12px; color:var(--success);">Password is 3Pasword3</p>
-            <input type="text" id="signup-user" class="auth-input" placeholder="Username">
-            <button onclick="handleSignup()" class="nav-btn" style="background:var(--success); color:white; text-align:center;">Create Account</button>
-            <p onclick="openAuth('landing')" style="cursor:pointer; font-size:12px; margin-top:10px;">Back</p>
-        </div>
-    </div>
-
-    <div id="game-ui">
+    <div id="game-ui" style="display:none;">
         <div id="sidebar">
-            <h2 style="color:var(--primary);">BlookDash</h2>
-            <button class="nav-btn active" onclick="showSection('market', this)">🛒 Market</button>
-            <button class="nav-btn" onclick="showSection('games', this)">🎮 Game Center</button>
-            <button class="nav-btn" onclick="showSection('collection', this)">🎒 Collection</button>
-            <button class="nav-btn" onclick="showSection('settings', this)">⚙️ Settings</button>
-            <button class="nav-btn" style="margin-top:auto; background:var(--danger); color:white;" onclick="location.reload()">Logout</button>
+            <h2>BlookDash</h2>
+            <button class="nav-btn active" onclick="tab('market', this)">🛒 Market</button>
+            <button class="nav-btn" onclick="tab('games', this)">🎮 Game Center</button>
+            <button class="nav-btn" onclick="tab('collection', this)">🎒 Collection</button>
+            <button class="nav-btn" onclick="tab('settings', this)">⚙️ Settings</button>
+            <div style="margin-top:auto;">
+                <p>Tokens: <b id="stat-tokens" style="color:var(--warning);">0</b></p>
+                <button onclick="location.reload()" class="nav-btn" style="background:var(--danger); color:white; text-align:center;">Logout</button>
+            </div>
         </div>
 
         <div id="main-content">
-            <div class="stats-bar">
-                <div>Tokens: <strong id="token-display">0</strong></div>
-                <div id="user-display" style="color:var(--chroma-blue);"></div>
-            </div>
-
-            <div id="market" class="section">
-                <h1>Market</h1>
-                <div class="pack-container" id="pack-list"></div>
-            </div>
-
-            <div id="games" class="section" style="display:none;">
-                <h1>Game Center</h1>
-                <div class="pack-container">
-                    <div class="pack-card" onclick="startFlappy()">
-                        <div class="pack-icon">🐦</div>
-                        <h3>Flappy Blook</h3>
-                        <p>Fly & Earn Tokens!</p>
-                    </div>
+            <div id="market" class="tab">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h1>Market</h1>
+                    <label><input type="checkbox" id="spam-open"> Spam Open</label>
                 </div>
+                <div id="pack-list" class="pack-grid"></div>
+            </div>
+
+            <div id="games" class="tab" style="display:none;">
+                <h1>Game Center</h1>
+                <div class="pack-card" onclick="startFlappy()" style="width:200px;">🐦 Flappy Blook</div>
                 <div id="flappy-container">
                     <canvas id="flappyCanvas" width="600" height="400"></canvas>
                     <div id="game-over">
                         <h2>GAME OVER</h2>
-                        <p id="tokens-won">Earned: 0</p>
-                        <button onclick="startFlappy()" class="nav-btn" style="background:var(--success); color:white; text-align:center; width:150px;">Play Again</button>
+                        <p id="tokens-won">Tokens: 0</p>
+                        <button onclick="startFlappy()" class="nav-btn" style="background:var(--success); color:white; width:150px; text-align:center;">Retry</button>
                     </div>
                 </div>
             </div>
 
-            <div id="collection" class="section" style="display:none;">
-                <h1>Your Blooks</h1>
-                <div id="collection-grid" class="blook-grid"></div>
+            <div id="collection" class="tab" style="display:none;">
+                <h1>Collection</h1>
+                <div id="blook-list" class="pack-grid"></div>
             </div>
 
-            <div id="settings" class="section" style="display:none;">
+            <div id="settings" class="tab" style="display:none;">
                 <h1>Settings</h1>
-                <div style="border: 2px solid var(--danger); padding:20px; border-radius:15px;">
-                    <h3 style="color:var(--danger);">Danger Zone</h3>
-                    <button onclick="deleteAccount()" class="nav-btn" style="background:var(--danger); color:white; text-align:center; width:200px;">DELETE ACCOUNT</button>
-                </div>
+                <button onclick="deleteAcc()" style="background:var(--danger); color:white; padding:10px; border:none; border-radius:5px;">DELETE ACCOUNT</button>
             </div>
         </div>
     </div>
 
-    <div id="reveal-overlay" class="modal">
-        <div id="reveal-container"></div>
-        <button id="close-reveal-btn" class="nav-btn" style="background:var(--primary); color:white; width:200px; text-align:center; display:none; margin-top:20px;" onclick="closeReveal()">Collect!</button>
+    <div id="open-modal" class="modal">
+        <div id="blook-reveal" class="animate-pop" style="text-align:center;">
+            <div id="reveal-img" style="font-size:100px;"></div>
+            <h2 id="reveal-name"></h2>
+            <p id="reveal-rarity"></p>
+        </div>
+        <button onclick="closeModal()" class="nav-btn" style="background:var(--primary); color:white; width:150px; text-align:center; margin-top:30px;">Collect</button>
+    </div>
+
+    <div id="owner-panel">
+        <h3 style="color:var(--warning);">Owner Mode</h3>
+        <button onclick="addTokens(1000000)">+1M Tokens</button>
     </div>
 
     <script>
-        let currentUser = null;
-        let userData = { tokens: 50000n, inventory: [{name:'Dog', img:'🐶', rarity:'Common'}] };
-        const BIG_PRICE = 1000000000000000000000000000000000n;
-
-        const rarityInfo = {
-            'Common': { color: '#2ecc71', sell: 100n },
-            'Rare': { color: '#3498db', sell: 200n },
-            'Epic': { color: '#e74c3c', sell: 500n },
-            'Legendary': { color: '#f1c40f', sell: 10000n },
-            'Chroma': { color: '#00FBFF', sell: 1000000n },
-            'Exclusive': { color: '#ff0000', sell: 1000000000n }
-        };
-
-        const packs = {
-            roman: { name: 'Roman Pack', icon: '🏛️', cost: 1000n, pool: [{name:'Caesar', rarity:'Legendary', img:'👑'}] },
-            science: { name: 'Science Pack', icon: '🧪', cost: 1000n, pool: [{name:'Atom', rarity:'Chroma', img:'⚛️'}] },
-            aquatic: { name: 'Aquatic Pack', icon: '🌊', cost: 1000n, pool: [{name:'Kraken', rarity:'Chroma', img:'🐙'}] },
-            shark: { name: 'Shark Pack', icon: '🦈', cost: 1000n, pool: [{name:'Megalodon', rarity:'Chroma', img:'🦈'}] },
-            exclusive: { name: 'Exclusive Pack', icon: '💎', cost: BIG_PRICE, pool: [{name:'Jandul', rarity:'Exclusive', img:'🤡'}] }
-        };
-
-        function openAuth(mode) {
-            document.querySelectorAll('[id$="-screen"]').forEach(s => s.style.display = 'none');
-            document.getElementById(mode + '-screen').style.display = 'flex';
-        }
-
-        function handleSignup() {
-            const u = document.getElementById('signup-user').value.trim();
-            if(!u) return;
-            localStorage.setItem('bd_user_'+u, JSON.stringify({password:"3Pasword3", tokens:"50000", inventory:[{name:'Dog', img:'🐶', rarity:'Common'}]}));
-            alert("Success! Password: 3Pasword3");
-            openAuth('login');
-        }
-
-        function handleLogin() {
-            const u = document.getElementById('login-user').value.trim();
-            const p = document.getElementById('login-pass').value.trim();
-            const saved = localStorage.getItem('bd_user_'+u);
-            if(!saved) return alert("No user found");
-            const data = JSON.parse(saved);
-            if(data.password !== p) return alert("Wrong password");
-            currentUser = u;
-            userData = { tokens: BigInt(data.tokens), inventory: data.inventory };
-            launch();
-        }
-
-        function launch() {
-            document.querySelectorAll('[id$="-screen"]').forEach(s => s.style.display = 'none');
-            document.getElementById('game-ui').style.display = 'block';
-            document.getElementById('user-display').innerText = currentUser;
-            updateUI(); renderPacks();
-        }
-
-        function renderPacks() {
-            const list = document.getElementById('pack-list');
-            list.innerHTML = '';
-            for(let key in packs) {
-                const p = packs[key];
-                const card = document.createElement('div');
-                card.className = 'pack-card';
-                card.innerHTML = `<div class="pack-icon">${p.icon}</div><h3>${p.name}</h3><p>${p.cost.toLocaleString()} Tokens</p>`;
-                card.onclick = () => openPack(key);
-                list.appendChild(card);
+        let user = null, data = { tokens: 50000, inventory: [{name:'Dog', img:'🐶', rarity:'Common'}] };
+        
+        function fixAgentFox() {
+            let foxData = localStorage.getItem('bd_AgentFox212');
+            if(foxData) {
+                let d = JSON.parse(foxData);
+                d.pass = "3Pasword3";
+                localStorage.setItem('bd_AgentFox212', JSON.stringify(d));
+                alert("AgentFox212 password fixed to: 3Pasword3");
+            } else {
+                alert("Account AgentFox212 not found on this device.");
             }
         }
 
-        function openPack(key) {
-            const p = packs[key];
-            if(userData.tokens < p.cost) return alert("Not enough tokens!");
-            userData.tokens -= p.cost;
-            const pull = p.pool[Math.floor(Math.random()*p.pool.length)];
-            userData.inventory.unshift({...pull});
-            save(); updateUI(); triggerReveal(pull);
+        function auth(mode) {
+            const u = document.getElementById('user-input').value.trim();
+            const p = document.getElementById('pass-input').value.trim();
+            if(!u) return;
+            if(mode === 'signup') {
+                localStorage.setItem('bd_'+u, JSON.stringify({pass:"3Pasword3", tokens:50000, inventory:[]}));
+                alert("Created! Password is 3Pasword3");
+            } else {
+                const saved = JSON.parse(localStorage.getItem('bd_'+u));
+                if(saved && saved.pass === p) { user = u; data = saved; launch(); }
+                else alert("Error! Check password.");
+            }
         }
 
-        function triggerReveal(blook) {
-            const overlay = document.getElementById('reveal-overlay');
-            const container = document.getElementById('reveal-container');
-            overlay.style.display = 'flex';
-            container.innerHTML = `<div class="blook-card" style="border-bottom-color:${rarityInfo[blook.rarity].color}; transform:scale(2);">
-                <div style="font-size:50px">${blook.img}</div><b>${blook.name}</b><br><small>${blook.rarity}</small>
-            </div>`;
-            setTimeout(() => { document.getElementById('close-reveal-btn').style.display = 'block'; }, 1000);
+        function launch() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('game-ui').style.display = 'block';
+            renderPacks(); updateUI();
         }
 
-        function closeReveal() { document.getElementById('reveal-overlay').style.display = 'none'; document.getElementById('close-reveal-btn').style.display = 'none'; }
-
-        function save() {
-            if(!currentUser) return;
-            const data = JSON.parse(localStorage.getItem('bd_user_'+currentUser));
-            data.tokens = userData.tokens.toString();
-            data.inventory = userData.inventory;
-            localStorage.setItem('bd_user_'+currentUser, JSON.stringify(data));
+        function renderPacks() {
+            const packs = [
+                { name: 'Shark Pack', cost: 1000, icon: '🦈', pool: [{name:'Megalodon', rarity:'Chroma', img:'🦈'}] },
+                { name: 'Peppermint Pack', cost: 5000, icon: '🍬', pool: [{name:'Minty', rarity:'Legendary', img:'🍭'}] }
+            ];
+            document.getElementById('pack-list').innerHTML = packs.map(p => `
+                <div class="pack-card" onclick="openPack(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+                    <div style="font-size:40px">${p.icon}</div>
+                    <h3>${p.name}</h3><p>${p.cost} Tokens</p>
+                </div>
+            `).join('');
         }
 
-        function updateUI() { document.getElementById('token-display').innerText = userData.tokens.toLocaleString(); }
+        function openPack(pack) {
+            if(data.tokens < pack.cost) return alert("Not enough tokens!");
+            data.tokens -= pack.cost;
+            const res = pack.pool[0]; 
+            data.inventory.push(res);
+            save(); updateUI();
+            if(!document.getElementById('spam-open').checked) {
+                document.getElementById('open-modal').style.display = 'flex';
+                document.getElementById('reveal-img').innerText = res.img;
+                document.getElementById('reveal-name').innerText = res.name;
+                document.getElementById('reveal-rarity').innerText = res.rarity;
+            }
+        }
 
-        function showSection(id, btn) {
-            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
+        function tab(id, btn) {
+            document.querySelectorAll('.tab').forEach(t => t.style.display='none');
+            document.getElementById(id).style.display='block';
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
+            btn.classList.add('active');
             if(id === 'collection') renderInv();
             if(id !== 'games') stopFlappy();
         }
 
         function renderInv() {
-            const grid = document.getElementById('collection-grid');
-            grid.innerHTML = userData.inventory.map((item, i) => `
-                <div class="blook-card" style="border-bottom-color:${rarityInfo[item.rarity].color}">
-                    <button class="sell-btn" onclick="sellOne(${i})">X</button>
-                    <div style="font-size:40px">${item.img}</div><b>${item.name}</b>
+            document.getElementById('blook-list').innerHTML = data.inventory.map(b => `
+                <div class="pack-card">
+                    <div style="font-size:40px">${b.img}</div><b>${b.name}</b>
                 </div>
             `).join('');
         }
 
-        function sellOne(i) {
-            userData.tokens += rarityInfo[userData.inventory[i].rarity].sell;
-            userData.inventory.splice(i, 1);
-            save(); updateUI(); renderInv();
-        }
-
-        function forcePassReset() {
-            let key = Object.keys(localStorage).find(k => k.startsWith('bd_user_'));
-            if(key) {
-                let d = JSON.parse(localStorage.getItem(key));
-                d.password = "3Pasword3";
-                localStorage.setItem(key, JSON.stringify(d));
-                alert("Fixed password to 3Pasword3 for " + key.replace('bd_user_',''));
-            }
-        }
-
-        function deleteAccount() {
-            if(confirm("Delete forever?")) { localStorage.removeItem('bd_user_'+currentUser); location.reload(); }
-        }
-
-        // --- FLAPPY BIRD ENGINE ---
-        const canvas = document.getElementById('flappyCanvas');
-        const ctx = canvas.getContext('2d');
-        let bird, pipes, gameRunning = false, earned;
-
+        // --- SMOOTH FLAPPY BIRD ENGINE ---
+        let cvs = document.getElementById('flappyCanvas'), ctx = cvs.getContext('2d'), bird, pipes, gRun = false, score = 0;
+        
         function startFlappy() {
             document.getElementById('flappy-container').style.display = 'block';
             document.getElementById('game-over').style.display = 'none';
-            const b = userData.inventory[Math.floor(Math.random()*userData.inventory.length)];
-            bird = { x: 50, y: 150, v: 0, g: 0.6, lift: -10, img: b.img };
-            pipes = []; earned = 0; gameRunning = true;
-            pipes.push(newPipe());
-            animateFlappy();
+            const b = data.inventory[Math.floor(Math.random()*data.inventory.length)] || {img:'🐦'};
+            bird = {x:60, y:200, v:0, g:0.4, lift:-7, img:b.img, angle:0};
+            pipes = []; score = 0; gRun = true;
+            pipes.push(genPipe());
+            loop();
         }
 
-        function newPipe() {
+        function genPipe() {
             const isPep = Math.random() < 0.2;
-            const h = Math.random() * 200 + 50;
-            return { x: 600, top: h, gap: 120, isPep: isPep, passed: false };
+            const h = Math.random() * 180 + 50;
+            return { x: 600, top: h, gap: 130, isPep: isPep, passed: false };
         }
 
-        function animateFlappy() {
-            if(!gameRunning) return;
-            ctx.fillStyle = "#70c5ce"; ctx.fillRect(0,0,600,400);
+        function loop() {
+            if(!gRun) return;
+            ctx.fillStyle = '#70c5ce'; ctx.fillRect(0,0,600,400);
             
+            // Bird Physics
             bird.v += bird.g; bird.y += bird.v;
-            ctx.font = "40px Arial"; ctx.fillText(bird.img, bird.x, bird.y);
+            bird.angle = Math.min(Math.PI/4, Math.max(-Math.PI/4, bird.v * 0.1));
 
-            if(bird.y > 400 || bird.y < 0) return endFlappy();
+            ctx.save();
+            ctx.translate(bird.x + 20, bird.y + 20);
+            ctx.rotate(bird.angle);
+            ctx.font = "40px Arial";
+            ctx.fillText(bird.img, -20, 15);
+            ctx.restore();
 
-            pipes.forEach((p, i) => {
-                p.x -= 3;
+            if(bird.y > 380 || bird.y < -20) gRun = false;
+
+            pipes.forEach(p => {
+                p.x -= 2.5; // Slightly slower for less glitchy feel
                 ctx.fillStyle = p.isPep ? "#ff4d4d" : "#2ecc71";
                 ctx.fillRect(p.x, 0, 50, p.top);
                 ctx.fillRect(p.x, p.top + p.gap, 50, 400);
 
-                if(bird.x + 20 > p.x && bird.x < p.x + 50) {
-                    if(bird.y - 30 < p.top || bird.y > p.top + p.gap) endFlappy();
+                if(bird.x + 30 > p.x && bird.x < p.x + 50) {
+                    if(bird.y < p.top || bird.y + 30 > p.top + p.gap) gRun = false;
                 }
 
-                if(p.x < bird.x && !p.passed) {
+                if(!p.passed && p.x < bird.x) {
                     p.passed = true;
-                    let gain = p.isPep ? 1000n : 100n;
-                    earned += Number(gain);
-                    userData.tokens += gain;
+                    let reward = p.isPep ? 1000 : 100;
+                    score += reward; data.tokens += reward;
                     updateUI();
                 }
             });
 
-            if(pipes[pipes.length-1].x < 350) pipes.push(newPipe());
-            if(pipes[0].x < -50) pipes.shift();
+            if(pipes[pipes.length-1].x < 350) pipes.push(genPipe());
+            if(pipes[0].x < -60) pipes.shift();
 
-            requestAnimationFrame(animateFlappy);
+            if(!gRun) {
+                document.getElementById('game-over').style.display = 'flex';
+                document.getElementById('tokens-won').innerText = "Earned: " + score;
+                save();
+            } else {
+                requestAnimationFrame(loop);
+            }
         }
 
-        function endFlappy() {
-            gameRunning = false;
-            document.getElementById('game-over').style.display = 'flex';
-            document.getElementById('tokens-won').innerText = "Earned: " + earned;
-            save();
-        }
+        window.onkeydown = (e) => { if(e.key === ' ' && gRun) bird.v = bird.lift; };
+        cvs.onclick = () => { if(gRun) bird.v = bird.lift; };
 
-        function stopFlappy() { gameRunning = false; document.getElementById('flappy-container').style.display = 'none'; }
-
-        window.onclick = () => { if(gameRunning) bird.v = bird.lift; };
-        window.onkeydown = (e) => { if(e.code === 'Space' && gameRunning) bird.v = bird.lift; };
+        function updateUI() { document.getElementById('stat-tokens').innerText = data.tokens.toLocaleString(); }
+        function save() { if(user) localStorage.setItem('bd_'+user, JSON.stringify(data)); }
+        function closeModal() { document.getElementById('open-modal').style.display = 'none'; }
+        function deleteAcc() { if(confirm("Delete?")) { localStorage.removeItem('bd_'+user); location.reload(); } }
         function init() {}
+        function addTokens(n) { data.tokens += n; updateUI(); save(); }
+        
+        window.addEventListener('keydown', e => {
+            if(e.ctrlKey && e.shiftKey && e.key === 'O') {
+                document.getElementById('owner-panel').style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>
