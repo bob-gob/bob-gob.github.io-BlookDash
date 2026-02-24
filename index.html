@@ -2,106 +2,90 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BlookDash | Version 25.0</title>
+    <title>BlookDash | Version 26.0</title>
     <style>
         :root {
             --primary: #3498db; --dark-bg: #0b101b; --sidebar-bg: #161d2b;
             --card-bg: #1c2331; --danger: #e74c3c; --success: #2ecc71;
             --warning: #f1c40f; --chroma: #00FBFF; --exclusive: #ff0000;
+            --epic: #a335ee; --legendary: #ff8000; --rare: #0070dd; --common: #ffffff;
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; overflow: hidden; user-select: none; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; overflow: hidden; }
 
-        /* --- AUTH SCREEN --- */
-        #auth-screen { position:fixed; width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, #1c2331, #0b101b); z-index:10000; }
-        .auth-box { background:var(--sidebar-bg); padding:40px; border-radius:20px; width:350px; text-align:center; border: 2px solid #2c3e50; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .auth-input { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #2c3e50; background:#0b101b; color:white; box-sizing:border-box; }
-        
-        /* --- SIDEBAR --- */
+        /* --- SPLASH SCREEN --- */
+        #splash-screen { position: fixed; width: 100%; height: 100%; background: radial-gradient(circle, #1c2331, #000); z-index: 30000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .bubble-text { font-size: 100px; font-weight: 900; color: var(--primary); text-shadow: 5px 5px 0px #fff, 10px 10px 25px rgba(0,0,0,0.7); letter-spacing: 8px; margin-bottom: 40px; font-family: 'Arial Rounded MT Bold', sans-serif; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .splash-btn { padding: 20px 50px; font-size: 24px; margin: 15px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; width: 250px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .splash-btn:hover { transform: scale(1.1); }
+
+        /* --- UI LAYOUT --- */
         #sidebar { width: 240px; background: var(--sidebar-bg); height: 100vh; display: flex; flex-direction: column; padding: 20px; border-right: 2px solid #2c3e50; float: left; box-sizing: border-box; }
         .nav-btn { background: none; border: none; color: #bdc3c7; text-align: left; padding: 12px; font-size: 18px; cursor: pointer; border-radius: 8px; margin-bottom: 8px; width: 100%; transition: 0.2s; }
-        .nav-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3); }
-        .nav-btn:hover { background: rgba(255,255,255,0.05); }
-
-        /* --- CONTENT --- */
+        .nav-btn.active { background: var(--primary); color: white; }
         #main-content { margin-left: 240px; padding: 40px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
-        .stats-bar { background: var(--sidebar-bg); padding: 15px 30px; border-radius: 12px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); }
 
-        /* --- MARKET & COLLECTIONS --- */
-        .pack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        /* --- CARDS --- */
+        .pack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
         .pack-card { background: var(--sidebar-bg); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid #2c3e50; cursor: pointer; transition: 0.3s; }
-        .pack-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .blook-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; border-bottom: 5px solid gray; position: relative; }
-        .sell-btn { position: absolute; top: 5px; right: 5px; background: var(--danger); border: none; color: white; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; }
+        .pack-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
-        /* --- ANIMATIONS --- */
+        /* --- MODALS --- */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; align-items: center; justify-content: center; flex-direction: column; }
-        @keyframes pop { 0% { transform: scale(0); } 80% { transform: scale(1.2); } 100% { transform: scale(1); } }
-        .animate-pop { animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
-        /* --- FLAPPY BIRD --- */
-        #flappy-container { display: none; position: relative; background: #70c5ce; border: 5px solid white; border-radius: 15px; margin: 0 auto; width: 600px; height: 400px; cursor: pointer; overflow: hidden; }
-        #game-over { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; flex-direction:column; align-items:center; justify-content:center; }
-
-        #owner-panel { position: fixed; bottom: 20px; right: 20px; background: #000; border: 2px solid var(--warning); padding: 15px; border-radius: 10px; display: none; z-index: 50000; }
+        #auth-screen { position:fixed; width:100%; height:100%; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:25000; }
+        
+        #game-canvas { background: #70c5ce; border: 6px solid #161d2b; border-radius: 20px; display: block; margin: 20px auto; cursor: pointer; }
     </style>
 </head>
 <body onload="init()">
 
+    <div id="splash-screen">
+        <div class="bubble-text">BlookDash</div>
+        <button class="splash-btn" style="background:var(--success); color:white;" onclick="showAuth()">SIGN UP</button>
+        <button class="splash-btn" style="background:var(--primary); color:white;" onclick="showAuth()">LOGIN</button>
+    </div>
+
     <div id="auth-screen">
-        <div class="auth-box">
-            <h1 style="font-size: 45px; margin: 0 0 20px 0;">BlookDash</h1>
-            <input type="text" id="user-input" class="auth-input" placeholder="Username">
-            <input type="password" id="pass-input" class="auth-input" placeholder="Password">
-            <button onclick="auth('login')" class="nav-btn" style="background:var(--primary); color:white; text-align:center;">Login</button>
-            <button onclick="auth('signup')" class="nav-btn" style="background:var(--success); color:white; text-align:center;">Sign Up</button>
-            <hr style="border:0; border-top:1px solid #2c3e50; margin:20px 0;">
-            <button onclick="forceFixFox()" style="background:var(--warning); color:black; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%;">REPAIR AGENTFOX212</button>
+        <div style="background:var(--sidebar-bg); padding:40px; border-radius:20px; width:350px; text-align:center; border:3px solid var(--primary);">
+            <h2>Account Access</h2>
+            <input type="text" id="user-input" style="width:100%; padding:12px; margin:15px 0; background:#000; color:#fff; border:1px solid #444; border-radius:5px;" placeholder="Username">
+            <button onclick="auth()" class="nav-btn" style="background:var(--primary); color:white; width:100%; text-align:center; font-weight:bold;">ENTER DASH</button>
         </div>
     </div>
 
     <div id="game-ui" style="display:none;">
         <div id="sidebar">
-            <h2 style="color:var(--primary);">BlookDash</h2>
+            <h2 style="color:var(--primary)">BlookDash</h2>
             <button class="nav-btn active" onclick="tab('market', this)">🛒 Market</button>
-            <button class="nav-btn" onclick="tab('games', this)">🎮 Game Center</button>
+            <button class="nav-btn" onclick="tab('community', this)">👥 Community Shop</button>
             <button class="nav-btn" onclick="tab('collection', this)">🎒 Collection</button>
-            <button class="nav-btn" onclick="tab('settings', this)">⚙️ Settings</button>
+            <button class="nav-btn" onclick="tab('game-center', this)">🕹️ Game Center</button>
             <div style="margin-top:auto;">
-                <p>Tokens: <b id="stat-tokens" style="color:var(--warning);">0</b></p>
-                <button onclick="location.reload()" class="nav-btn" style="background:var(--danger); color:white; text-align:center;">Logout</button>
+                <p style="font-size:12px; color:#888;">BALANCE</p>
+                <b id="stat-tokens" style="color:var(--warning); font-size:18px; word-break: break-all;">0</b>
+                <button onclick="location.reload()" class="nav-btn" style="background:var(--danger); color:white; text-align:center; margin-top:15px;">Logout</button>
             </div>
         </div>
 
         <div id="main-content">
             <div id="market" class="tab">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h1>Market</h1>
-                    <label style="background:var(--sidebar-bg); padding:10px; border-radius:8px; cursor:pointer;">
-                        <input type="checkbox" id="spam-open"> Spam Open (Instantly)
-                    </label>
-                </div>
+                <h1>Market</h1>
                 <div id="pack-list" class="pack-grid"></div>
             </div>
 
-            <div id="games" class="tab" style="display:none;">
-                <h1>Game Center</h1>
-                <div class="pack-grid">
-                    <div class="pack-card" onclick="startFlappy()">
-                        <div style="font-size:50px;">🐦</div>
-                        <h3>Flappy Blook</h3>
-                        <p>100 - 1,000 Tokens per pipe!</p>
+            <div id="community" class="tab" style="display:none;">
+                <h1>Community Shop</h1>
+                <div style="background:var(--card-bg); padding:25px; border-radius:20px; margin-bottom:30px; border:2px dashed var(--primary);">
+                    <h3>List a New Blook</h3>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <input type="text" id="custom-name" placeholder="Name" style="padding:10px; border-radius:5px; flex:1;">
+                        <input type="text" id="custom-img" placeholder="Emoji" style="padding:10px; border-radius:5px; width:60px;">
+                        <input type="number" id="custom-price" placeholder="Price" style="padding:10px; border-radius:5px; width:120px;">
+                        <button onclick="createCommunityBlook()" class="nav-btn" style="background:var(--success); color:white; width:auto; padding:0 20px;">Post Listing</button>
                     </div>
                 </div>
-                <br>
-                <div id="flappy-container">
-                    <canvas id="flappyCanvas" width="600" height="400"></canvas>
-                    <div id="game-over">
-                        <h2 style="font-size:40px; color:var(--danger);">GAME OVER</h2>
-                        <p id="tokens-won" style="font-size:20px;">Earned: 0</p>
-                        <button onclick="startFlappy()" class="nav-btn" style="background:var(--success); color:white; width:180px; text-align:center;">Play Again</button>
-                    </div>
-                </div>
+                <div id="community-list" class="pack-grid"></div>
             </div>
 
             <div id="collection" class="tab" style="display:none;">
@@ -109,78 +93,75 @@
                 <div id="blook-list" class="pack-grid"></div>
             </div>
 
-            <div id="settings" class="tab" style="display:none;">
-                <h1>Settings</h1>
-                <div style="border:2px solid var(--danger); padding:20px; border-radius:15px; background:rgba(231,76,60,0.1);">
-                    <h3 style="color:var(--danger);">Danger Zone</h3>
-                    <p>Wiping your account is permanent.</p>
-                    <button onclick="deleteAcc()" class="nav-btn" style="background:var(--danger); color:white; text-align:center; width:200px;">DELETE ACCOUNT</button>
+            <div id="game-center" class="tab" style="display:none; text-align: center;">
+                <h1>Game Center</h1>
+                <div style="display:flex; justify-content:center; gap:40px;">
+                    <h2>Score: <span id="f-score">0</span></h2>
+                    <h2 style="color:var(--success)">Earned: <span id="f-earned">0</span></h2>
                 </div>
+                <canvas id="game-canvas" width="400" height="450"></canvas>
+                <button onclick="resetGame()" class="nav-btn" style="background:var(--primary); width: 220px; margin: 10px auto; text-align:center;">Reset & Play</button>
             </div>
         </div>
     </div>
 
     <div id="reveal-modal" class="modal">
-        <div id="reveal-card" class="animate-pop" style="text-align:center;">
-            <div id="reveal-img" style="font-size:120px;"></div>
-            <h2 id="reveal-name" style="font-size:35px; margin:10px 0;"></h2>
-            <p id="reveal-rarity" style="font-size:20px; font-weight:bold;"></p>
+        <div id="reveal-card" style="text-align:center;">
+            <div id="reveal-img" style="font-size:150px;"></div>
+            <h2 id="reveal-name" style="font-size:45px; margin:10px 0;"></h2>
+            <p id="reveal-rarity" style="font-size:25px; font-weight:bold; letter-spacing:2px;"></p>
         </div>
-        <button onclick="closeModal()" class="nav-btn" style="background:var(--primary); color:white; width:200px; text-align:center; margin-top:40px;">Awesome!</button>
-    </div>
-
-    <div id="owner-panel">
-        <h3 style="color:var(--warning); margin:0 0 10px 0;">Owner Mode</h3>
-        <button onclick="addTokens(1000000)" style="margin-bottom:5px; width:100%;">+1M Tokens</button><br>
-        <button onclick="unlockAll()" style="width:100%;">Unlock All Packs</button>
+        <button onclick="closeModal()" class="nav-btn" style="background:var(--primary); color:white; width:200px; margin-top:50px; font-weight:bold;">COLLECT</button>
     </div>
 
     <script>
-        let user = null, data = { tokens: 50000n, inventory: [] };
-        const DEC_PRICE = 1000000000000000000000000000000000n;
-
-        const rarityInfo = {
-            'Common': { color: '#2ecc71', sell: 100n },
-            'Rare': { color: '#3498db', sell: 200n },
-            'Epic': { color: '#e74c3c', sell: 500n },
-            'Legendary': { color: '#f1c40f', sell: 10000n },
-            'Chroma': { color: '#00FBFF', sell: 1000000n },
-            'Exclusive': { color: '#ff0000', sell: 1000000000n }
-        };
+        let user = null;
+        let data = { tokens: 5000n, inventory: [] };
+        let communityBlooks = []; 
+        const DEC = 10n ** 33n;
 
         const packs = [
-            { name: 'Roman Pack', icon: '🏛️', cost: 1000n, pool: [{name:'Caesar', rarity:'Legendary', img:'👑'}, {name:'Soldier', rarity:'Common', img:'💂'}] },
-            { name: 'Science Pack', icon: '🧪', cost: 1000n, pool: [{name:'Einstein', rarity:'Legendary', img:'🧠'}, {name:'Atom', rarity:'Chroma', img:'⚛️'}] },
-            { name: 'Aquatic Pack', icon: '🌊', cost: 1000n, pool: [{name:'Kraken', rarity:'Chroma', img:'🐙'}, {name:'Fish', rarity:'Common', img:'🐟'}] },
-            { name: 'Shark Pack', icon: '🦈', cost: 1000n, pool: [{name:'Megalodon', rarity:'Chroma', img:'🦈'}] },
-            { name: 'Exclusive Pack', icon: '💎', cost: DEC_PRICE, pool: [{name:'Jandul', rarity:'Exclusive', img:'🤡'}] }
+            { name: 'Medieval Pack', icon: '🏰', cost: 1000n, pool: [
+                {name:'Peasant', rarity:'Common', img:'👨‍🌾'}, {name:'Squire', rarity:'Common', img:'🛡️'}, 
+                {name:'Knight', rarity:'Rare', img:'🤺'}, {name:'Archer', rarity:'Rare', img:'🏹'},
+                {name:'Wizard', rarity:'Epic', img:'🧙'}, {name:'King', rarity:'Legendary', img:'👑'},
+                {name:'The Dragon', rarity:'Chroma', img:'🐉'}
+            ]},
+            { name: 'Shark Pack', icon: '🦈', cost: 1000n, pool: [
+                {name:'Reef Shark', rarity:'Common', img:'🐟'}, {name:'Mako Shark', rarity:'Rare', img:'🦈'}, 
+                {name:'Hammerhead Shark', rarity:'Epic', img:'🔨'}, {name:'Great White Shark', rarity:'Legendary', img:'🦈'},
+                {name:'Megalodon', rarity:'Chroma', img:'🦖'}
+            ]},
+            { name: 'Roman Pack', icon: '🏛️', cost: 1000n, pool: [
+                {name:'Roman Soldier', rarity:'Common', img:'💂'}, {name:'Centurion', rarity:'Rare', img:'🎖️'}, 
+                {name:'Gladiator', rarity:'Epic', img:'⚔️'}, {name:'Julius Caesar', rarity:'Legendary', img:'🏛️'},
+                {name:'Mars', rarity:'Chroma', img:'☄️'}
+            ]},
+            { name: 'Aquatic Pack', icon: '🌊', cost: 1000n, pool: [
+                {name:'Clownfish', rarity:'Common', img:'🐠'}, {name:'Sea Turtle', rarity:'Rare', img:'🐢'}, 
+                {name:'Giant Squid', rarity:'Epic', img:'🦑'}, {name:'Blue Whale', rarity:'Legendary', img:'🐋'},
+                {name:'Kraken', rarity:'Chroma', img:'🐙'}
+            ]},
+            { name: 'Science Pack', icon: '🧪', cost: 1000n, pool: [
+                {name:'Beaker', rarity:'Common', img:'🧪'}, {name:'Microscope', rarity:'Rare', img:'🔬'}, 
+                {name:'DNA Helix', rarity:'Epic', img:'🧬'}, {name:'Albert Einstein', rarity:'Legendary', img:'👨‍🏫'},
+                {name:'The Atom', rarity:'Chroma', img:'⚛️'}
+            ]},
+            { name: 'Exclusive Pack', icon: '💎', cost: DEC, pool: [
+                {name:'Jandul Dul Dul', rarity:'Exclusive', img:'🤡'},
+                {name:'Raccooni Jandelini', rarity:'Exclusive', img:'🦝'}
+            ]}
         ];
 
-        // --- ACCOUNT LOGIC ---
-        function forceFixFox() {
-            localStorage.setItem('bd_AgentFox212', JSON.stringify({pass:"3Pasword3", tokens:"50000", inventory:[]}));
-            alert("AgentFox212 Repaired! Password: 3Pasword3");
-        }
+        function showAuth() { document.getElementById('auth-screen').style.display = 'flex'; }
 
-        function auth(mode) {
+        function auth() {
             const u = document.getElementById('user-input').value.trim();
-            const p = document.getElementById('pass-input').value.trim();
             if(!u) return;
-            if(mode === 'signup') {
-                if(localStorage.getItem('bd_'+u)) return alert("Name taken!");
-                localStorage.setItem('bd_'+u, JSON.stringify({pass:"3Pasword3", tokens:"50000", inventory:[]}));
-                alert("Success! Pass is 3Pasword3");
-            } else {
-                const saved = JSON.parse(localStorage.getItem('bd_'+u));
-                if(saved && saved.pass === p) {
-                    user = u; 
-                    data = { tokens: BigInt(saved.tokens), inventory: saved.inventory };
-                    launch();
-                } else alert("Invalid Login!");
-            }
-        }
-
-        function launch() {
+            user = u;
+            const saved = JSON.parse(localStorage.getItem('bd_'+u));
+            if(saved) data = { tokens: BigInt(saved.tokens), inventory: saved.inventory };
+            document.getElementById('splash-screen').style.display = 'none';
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('game-ui').style.display = 'block';
             renderPacks(); updateUI();
@@ -189,97 +170,122 @@
         function renderPacks() {
             document.getElementById('pack-list').innerHTML = packs.map((p, i) => `
                 <div class="pack-card" onclick="buyPack(${i})">
-                    <div style="font-size:50px;">${p.icon}</div>
-                    <h3>${p.name}</h3>
-                    <p>${p.cost.toLocaleString()} Tokens</p>
-                </div>
-            `).join('');
+                    <div style="font-size:60px;">${p.icon}</div>
+                    <h3>${p.name}</h3><p>${p.cost >= DEC ? '1 Decillion' : p.cost.toLocaleString()} Tokens</p>
+                </div>`).join('');
         }
 
         function buyPack(i) {
             const p = packs[i];
-            if(data.tokens < p.cost) return alert("Not enough tokens!");
+            if(data.tokens < p.cost) return alert("Insufficient balance!");
             data.tokens -= p.cost;
             const res = p.pool[Math.floor(Math.random()*p.pool.length)];
             data.inventory.unshift({...res});
-            save(); updateUI();
-
-            if(document.getElementById('spam-open').checked) return;
-            
-            document.getElementById('reveal-modal').style.display = 'flex';
-            document.getElementById('reveal-img').innerText = res.img;
-            document.getElementById('reveal-name').innerText = res.name;
-            document.getElementById('reveal-rarity').innerText = res.rarity;
-            document.getElementById('reveal-rarity').style.color = rarityInfo[res.rarity].color;
+            save(); updateUI(); showReveal(res);
         }
 
-        // --- FLAPPY ENGINE ---
-        let cvs = document.getElementById('flappyCanvas'), ctx = cvs.getContext('2d'), bird, pipes, gRun = false, score = 0;
-        function startFlappy() {
-            document.getElementById('flappy-container').style.display = 'block';
-            document.getElementById('game-over').style.display = 'none';
-            const b = data.inventory[Math.floor(Math.random()*data.inventory.length)] || {img:'🐦'};
-            bird = {x:60, y:200, v:0, g:0.4, lift:-7, img:b.img, angle:0};
-            pipes = [{x:600, top:150, gap:130, isPep:false, passed:false}]; score = 0; gRun = true;
-            loop();
+        function createCommunityBlook() {
+            const n = document.getElementById('custom-name').value;
+            const im = document.getElementById('custom-img').value;
+            const pr = BigInt(document.getElementById('custom-price').value || 0);
+            if(!n || !im || pr <= 0n) return alert("Fill all fields correctly!");
+            communityBlooks.push({ name: n, img: im, cost: pr, rarity: 'Community', seller: user });
+            renderCommunity();
+            alert("Blook Listed!");
         }
-        function loop() {
-            if(!gRun) return;
-            ctx.fillStyle = '#70c5ce'; ctx.fillRect(0,0,600,400);
-            bird.v += bird.g; bird.y += bird.v;
-            bird.angle = Math.min(Math.PI/4, Math.max(-Math.PI/4, bird.v * 0.1));
-            ctx.save(); ctx.translate(bird.x+20, bird.y+20); ctx.rotate(bird.angle);
-            ctx.font="40px Arial"; ctx.fillText(bird.img,-20,15); ctx.restore();
 
-            pipes.forEach(p => {
-                p.x -= 2.5;
-                ctx.fillStyle = p.isPep ? "#ff4d4d" : "#2ecc71";
-                ctx.fillRect(p.x, 0, 50, p.top);
-                ctx.fillRect(p.x, p.top+p.gap, 50, 400);
-                if(bird.x+30 > p.x && bird.x < p.x+50 && (bird.y < p.top || bird.y+30 > p.top+p.gap)) gRun = false;
-                if(!p.passed && p.x < bird.x) { 
-                    p.passed = true; let gain = p.isPep ? 1000n : 100n; 
-                    score += Number(gain); data.tokens += gain; updateUI(); 
-                }
-            });
-            if(pipes[0].x < -50) pipes.shift();
-            if(pipes[pipes.length-1].x < 350) pipes.push({x:600, top:Math.random()*180+50, gap:130, isPep:Math.random()<0.2, passed:false});
-            if(bird.y > 380 || bird.y < -20) gRun = false;
-            if(!gRun) { document.getElementById('game-over').style.display='flex'; document.getElementById('tokens-won').innerText="Earned: "+score; save(); }
-            else requestAnimationFrame(loop);
+        function renderCommunity() {
+            document.getElementById('community-list').innerHTML = communityBlooks.map((b, i) => `
+                <div class="pack-card" onclick="buyCommunity(${i})">
+                    <div style="font-size:50px;">${b.img}</div>
+                    <b>${b.name}</b><br><small>By: ${b.seller}</small>
+                    <p style="color:var(--warning); font-weight:bold;">${b.cost.toLocaleString()} Tokens</p>
+                </div>`).join('');
         }
-        window.onkeydown = (e) => { if(e.key === ' ' && gRun) bird.v = bird.lift; };
-        cvs.onclick = () => { if(gRun) bird.v = bird.lift; };
 
-        // --- UI UTILS ---
+        function buyCommunity(i) {
+            const b = communityBlooks[i];
+            if(data.tokens < b.cost) return alert("Not enough tokens!");
+            data.tokens -= b.cost;
+            data.inventory.unshift({...b});
+            save(); updateUI(); alert("You bought " + b.name);
+        }
+
         function tab(id, btn) {
             document.querySelectorAll('.tab').forEach(t => t.style.display='none');
             document.getElementById(id).style.display='block';
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             if(id === 'collection') renderInv();
+            if(id === 'community') renderCommunity();
         }
+
         function renderInv() {
-            document.getElementById('blook-list').innerHTML = data.inventory.map((b, i) => `
-                <div class="blook-card" style="border-bottom-color:${rarityInfo[b.rarity].color}">
-                    <button class="sell-btn" onclick="sellOne(${i})">X</button>
-                    <div style="font-size:45px;">${b.img}</div><b>${b.name}</b>
-                </div>
-            `).join('');
+            document.getElementById('blook-list').innerHTML = data.inventory.map(b => `
+                <div class="pack-card">
+                    <div style="font-size:50px;">${b.img}</div><b>${b.name}</b><br><small>${b.rarity}</small>
+                </div>`).join('');
         }
-        function sellOne(i) {
-            data.tokens += rarityInfo[data.inventory[i].rarity].sell;
-            data.inventory.splice(i, 1);
-            save(); updateUI(); renderInv();
+
+        function showReveal(b) {
+            const colors = { Common:'#fff', Rare:'#0070dd', Epic:'#a335ee', Legendary:'#ff8000', Chroma:'#00FBFF', Exclusive:'#ff0000' };
+            document.getElementById('reveal-modal').style.display = 'flex';
+            document.getElementById('reveal-img').innerText = b.img;
+            document.getElementById('reveal-name').innerText = b.name;
+            document.getElementById('reveal-rarity').innerText = b.rarity;
+            document.getElementById('reveal-rarity').style.color = colors[b.rarity] || '#fff';
         }
-        function save() { if(user) localStorage.setItem('bd_'+user, JSON.stringify({pass:"3Pasword3", tokens:data.tokens.toString(), inventory:data.inventory})); }
+
+        function save() { if(user) localStorage.setItem('bd_'+user, JSON.stringify({tokens:data.tokens.toString(), inventory:data.inventory})); }
         function updateUI() { document.getElementById('stat-tokens').innerText = data.tokens.toLocaleString(); }
         function closeModal() { document.getElementById('reveal-modal').style.display='none'; }
-        function deleteAcc() { if(confirm("Wipe everything?")) { localStorage.removeItem('bd_'+user); location.reload(); } }
-        function addTokens(n) { data.tokens += BigInt(n); updateUI(); save(); }
-        function unlockAll() { packs.forEach(p => p.pool.forEach(b => data.inventory.push(b))); save(); renderInv(); }
-        window.addEventListener('keydown', e => { if(e.ctrlKey && e.shiftKey && e.key === 'O') document.getElementById('owner-panel').style.display='block'; });
-        function init() {}
+
+        /* --- FLAPPY ENGINE --- */
+        const cvs = document.getElementById('game-canvas');
+        const ctx = cvs.getContext('2d');
+        let bird, pipes, score, earned, active = false;
+
+        function resetGame() {
+            bird = { x: 50, y: 200, v: 0, g: 0.22, j: -4.5, s: 25 };
+            pipes = []; score = 0; earned = 0; active = true;
+            document.getElementById('f-score').innerText = "0";
+            document.getElementById('f-earned').innerText = "0";
+        }
+
+        function gameLoop() {
+            if(active) {
+                bird.v += bird.g; bird.y += bird.v;
+                if(pipes.length === 0 || pipes[pipes.length-1].x < 220) {
+                    let gap = 140, top = Math.random() * (cvs.height - gap - 100) + 50;
+                    pipes.push({ x: cvs.width, t: top, b: top + gap, passed: false });
+                }
+                pipes.forEach((p, i) => {
+                    p.x -= 3;
+                    if(p.x + 50 < 0) pipes.splice(i,1);
+                    if(!p.passed && bird.x > p.x + 50) { 
+                        p.passed = true; score++; earned += 100;
+                        document.getElementById('f-score').innerText = score;
+                        document.getElementById('f-earned').innerText = earned;
+                        data.tokens += 100n; updateUI(); 
+                    }
+                    if(bird.x + bird.s > p.x && bird.x < p.x + 50 && (bird.y < p.t || bird.y + bird.s > p.b)) active = false;
+                });
+                if(bird.y > cvs.height || bird.y < 0) active = false;
+                if(!active) save(); 
+            }
+            ctx.clearRect(0,0, cvs.width, cvs.height);
+            ctx.fillStyle = "#f1c40f"; ctx.fillRect(bird.x, bird.y, bird.s, bird.s);
+            ctx.fillStyle = "#2ecc71";
+            pipes.forEach(p => { ctx.fillRect(p.x, 0, 50, p.t); ctx.fillRect(p.x, p.b, 50, cvs.height - p.b); });
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.addEventListener('keydown', e => { 
+            if(e.code === 'Space' && active) bird.v = bird.j; 
+            if(e.ctrlKey && e.shiftKey && e.key === 'O') { data.tokens += 1000000n; updateUI(); }
+        });
+        cvs.addEventListener('mousedown', () => { if(active) bird.v = bird.j; });
+        function init() { gameLoop(); }
     </script>
 </body>
 </html>
