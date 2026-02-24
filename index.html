@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BlookDash | Version 26.0</title>
+    <title>BlookDash | Version 27.0</title>
     <style>
         :root {
             --primary: #3498db; --dark-bg: #0b101b; --sidebar-bg: #161d2b;
@@ -15,40 +15,51 @@
 
         /* --- SPLASH SCREEN --- */
         #splash-screen { position: fixed; width: 100%; height: 100%; background: radial-gradient(circle, #1c2331, #000); z-index: 30000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .bubble-text { font-size: 100px; font-weight: 900; color: var(--primary); text-shadow: 5px 5px 0px #fff, 10px 10px 25px rgba(0,0,0,0.7); letter-spacing: 8px; margin-bottom: 40px; font-family: 'Arial Rounded MT Bold', sans-serif; animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        .splash-btn { padding: 20px 50px; font-size: 24px; margin: 15px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; width: 250px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .splash-btn:hover { transform: scale(1.1); }
+        .floating-blook { position: absolute; font-size: 45px; opacity: 0.2; z-index: 0; animation: floatAround 20s linear infinite; pointer-events: none; }
+        @keyframes floatAround { from { transform: translate(-10vw, -10vh) rotate(0deg); } to { transform: translate(110vw, 110vh) rotate(360deg); } }
+        
+        .bubble-text { font-size: 100px; font-weight: 900; color: var(--primary); text-shadow: 5px 5px 0px #fff, 10px 10px 25px rgba(0,0,0,0.7); letter-spacing: 8px; margin-bottom: 40px; font-family: 'Arial Rounded MT Bold', sans-serif; z-index: 10; animation: pulse 3s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        
+        .splash-btn { padding: 20px 50px; font-size: 24px; margin: 15px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; width: 250px; z-index: 20; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .splash-btn:hover { transform: scale(1.1); filter: brightness(1.1); }
 
         /* --- UI LAYOUT --- */
         #sidebar { width: 240px; background: var(--sidebar-bg); height: 100vh; display: flex; flex-direction: column; padding: 20px; border-right: 2px solid #2c3e50; float: left; box-sizing: border-box; }
         .nav-btn { background: none; border: none; color: #bdc3c7; text-align: left; padding: 12px; font-size: 18px; cursor: pointer; border-radius: 8px; margin-bottom: 8px; width: 100%; transition: 0.2s; }
         .nav-btn.active { background: var(--primary); color: white; }
-        #main-content { margin-left: 240px; padding: 40px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
+        #main-content { margin-left: 240px; padding: 30px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
 
-        /* --- CARDS --- */
-        .pack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .pack-card { background: var(--sidebar-bg); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid #2c3e50; cursor: pointer; transition: 0.3s; }
+        /* --- COMMUNITY & CHAT --- */
+        .community-container { display: flex; gap: 20px; height: 500px; align-items: flex-start; }
+        .chat-box { width: 300px; background: var(--sidebar-bg); border-radius: 15px; display: flex; flex-direction: column; border: 1px solid #2c3e50; height: 100%; }
+        #chat-messages { flex: 1; padding: 15px; overflow-y: auto; font-size: 14px; }
+        .chat-input-area { padding: 10px; border-top: 1px solid #2c3e50; display: flex; gap: 5px; }
+        .msg { margin-bottom: 8px; padding: 5px 10px; border-radius: 5px; background: rgba(255,255,255,0.05); }
+        .msg b { color: var(--primary); }
+
+        /* --- GRID & CARDS --- */
+        .pack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; flex: 1; }
+        .pack-card { background: var(--sidebar-bg); padding: 25px; border-radius: 20px; text-align: center; border: 2px solid #2c3e50; cursor: pointer; transition: 0.3s; position: relative; }
         .pack-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
-        /* --- MODALS --- */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; align-items: center; justify-content: center; flex-direction: column; }
-        #auth-screen { position:fixed; width:100%; height:100%; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:25000; }
-        
-        #game-canvas { background: #70c5ce; border: 6px solid #161d2b; border-radius: 20px; display: block; margin: 20px auto; cursor: pointer; }
+        #auth-screen { position:fixed; width:100%; height:100%; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.9); z-index:40000; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 50000; align-items: center; justify-content: center; flex-direction: column; }
+        #game-canvas { background: #70c5ce; border: 5px solid #fff; border-radius: 15px; display: block; margin: 20px auto; cursor: crosshair; }
     </style>
 </head>
 <body onload="init()">
 
     <div id="splash-screen">
+        <div id="blook-bg"></div>
         <div class="bubble-text">BlookDash</div>
-        <button class="splash-btn" style="background:var(--success); color:white;" onclick="showAuth()">SIGN UP</button>
-        <button class="splash-btn" style="background:var(--primary); color:white;" onclick="showAuth()">LOGIN</button>
+        <button class="splash-btn" style="background:var(--success); color:white;" onclick="openAuth()">SIGN UP</button>
+        <button class="splash-btn" style="background:var(--primary); color:white;" onclick="openAuth()">LOGIN</button>
     </div>
 
     <div id="auth-screen">
-        <div style="background:var(--sidebar-bg); padding:40px; border-radius:20px; width:350px; text-align:center; border:3px solid var(--primary);">
-            <h2>Account Access</h2>
+        <div style="background:var(--sidebar-bg); padding:40px; border-radius:20px; width:320px; text-align:center; border:2px solid var(--primary);">
+            <h2 id="auth-title">Welcome</h2>
             <input type="text" id="user-input" style="width:100%; padding:12px; margin:15px 0; background:#000; color:#fff; border:1px solid #444; border-radius:5px;" placeholder="Username">
             <button onclick="auth()" class="nav-btn" style="background:var(--primary); color:white; width:100%; text-align:center; font-weight:bold;">ENTER DASH</button>
         </div>
@@ -58,13 +69,14 @@
         <div id="sidebar">
             <h2 style="color:var(--primary)">BlookDash</h2>
             <button class="nav-btn active" onclick="tab('market', this)">🛒 Market</button>
-            <button class="nav-btn" onclick="tab('community', this)">👥 Community Shop</button>
+            <button class="nav-btn" onclick="tab('community', this)">👥 Community</button>
             <button class="nav-btn" onclick="tab('collection', this)">🎒 Collection</button>
             <button class="nav-btn" onclick="tab('game-center', this)">🕹️ Game Center</button>
+            <button class="nav-btn" onclick="tab('promo', this)">🎟️ Promo Code</button>
             <div style="margin-top:auto;">
-                <p style="font-size:12px; color:#888;">BALANCE</p>
+                <p style="font-size:12px; color:#888;">TOKENS</p>
                 <b id="stat-tokens" style="color:var(--warning); font-size:18px; word-break: break-all;">0</b>
-                <button onclick="location.reload()" class="nav-btn" style="background:var(--danger); color:white; text-align:center; margin-top:15px;">Logout</button>
+                <button onclick="location.reload()" class="nav-btn" style="background:var(--danger); color:white; text-align:center; margin-top:10px;">Logout</button>
             </div>
         </div>
 
@@ -75,17 +87,26 @@
             </div>
 
             <div id="community" class="tab" style="display:none;">
-                <h1>Community Shop</h1>
-                <div style="background:var(--card-bg); padding:25px; border-radius:20px; margin-bottom:30px; border:2px dashed var(--primary);">
-                    <h3>List a New Blook</h3>
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <input type="text" id="custom-name" placeholder="Name" style="padding:10px; border-radius:5px; flex:1;">
-                        <input type="text" id="custom-img" placeholder="Emoji" style="padding:10px; border-radius:5px; width:60px;">
-                        <input type="number" id="custom-price" placeholder="Price" style="padding:10px; border-radius:5px; width:120px;">
-                        <button onclick="createCommunityBlook()" class="nav-btn" style="background:var(--success); color:white; width:auto; padding:0 20px;">Post Listing</button>
+                <h1>Community Shop & Chat</h1>
+                <div class="community-container">
+                    <div class="chat-box">
+                        <div id="chat-messages"></div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input" placeholder="Say something..." style="flex:1; padding:8px; background:#000; color:white; border:none; border-radius:5px;">
+                            <button onclick="sendMessage()" style="padding:8px; background:var(--primary); color:white; border:none; border-radius:5px; cursor:pointer;">Send</button>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="background:var(--card-bg); padding:20px; border-radius:15px; margin-bottom:20px; border:1px dashed var(--primary);">
+                            <h3>Sell a Custom Blook</h3>
+                            <input type="text" id="custom-name" placeholder="Name" style="padding:8px; width:100px;">
+                            <input type="text" id="custom-img" placeholder="Emoji" style="padding:8px; width:50px;">
+                            <input type="number" id="custom-price" placeholder="Price" style="padding:8px; width:80px;">
+                            <button onclick="createCommunityBlook()" class="nav-btn" style="background:var(--success); color:white; width:auto; display:inline-block; padding:8px 15px;">List</button>
+                        </div>
+                        <div id="community-list" class="pack-grid"></div>
                     </div>
                 </div>
-                <div id="community-list" class="pack-grid"></div>
             </div>
 
             <div id="collection" class="tab" style="display:none;">
@@ -93,14 +114,20 @@
                 <div id="blook-list" class="pack-grid"></div>
             </div>
 
-            <div id="game-center" class="tab" style="display:none; text-align: center;">
-                <h1>Game Center</h1>
-                <div style="display:flex; justify-content:center; gap:40px;">
-                    <h2>Score: <span id="f-score">0</span></h2>
-                    <h2 style="color:var(--success)">Earned: <span id="f-earned">0</span></h2>
+            <div id="game-center" class="tab" style="display:none; text-align:center;">
+                <h1>Flappy Blook</h1>
+                <h2>Score: <span id="f-score">0</span> | Tokens: +100 per Pipe</h2>
+                <canvas id="game-canvas" width="400" height="400"></canvas>
+                <button onclick="resetGame()" class="nav-btn" style="background:var(--success); width:200px; margin:0 auto; text-align:center;">Start Game</button>
+            </div>
+
+            <div id="promo" class="tab" style="display:none; text-align:center;">
+                <h1>Redeem Code</h1>
+                <div style="background:var(--card-bg); padding:40px; border-radius:20px; display:inline-block;">
+                    <input type="text" id="promo-input" placeholder="ENTER CODE" style="padding:15px; font-size:20px; text-align:center; border-radius:10px; width:300px;">
+                    <br><br>
+                    <button onclick="redeemPromo()" class="nav-btn" style="background:var(--success); color:white; width:150px; text-align:center; display:inline-block;">Redeem</button>
                 </div>
-                <canvas id="game-canvas" width="400" height="450"></canvas>
-                <button onclick="resetGame()" class="nav-btn" style="background:var(--primary); width: 220px; margin: 10px auto; text-align:center;">Reset & Play</button>
             </div>
         </div>
     </div>
@@ -108,98 +135,90 @@
     <div id="reveal-modal" class="modal">
         <div id="reveal-card" style="text-align:center;">
             <div id="reveal-img" style="font-size:150px;"></div>
-            <h2 id="reveal-name" style="font-size:45px; margin:10px 0;"></h2>
-            <p id="reveal-rarity" style="font-size:25px; font-weight:bold; letter-spacing:2px;"></p>
+            <h1 id="reveal-name" style="margin:10px 0;"></h1>
+            <h3 id="reveal-rarity" style="text-transform:uppercase; letter-spacing:2px;"></h3>
         </div>
-        <button onclick="closeModal()" class="nav-btn" style="background:var(--primary); color:white; width:200px; margin-top:50px; font-weight:bold;">COLLECT</button>
+        <button onclick="closeModal()" class="nav-btn" style="background:var(--primary); color:white; width:180px; margin-top:40px; font-weight:bold;">AWESOME!</button>
     </div>
 
     <script>
         let user = null;
-        let data = { tokens: 5000n, inventory: [] };
-        let communityBlooks = []; 
+        let data = { tokens: 5000n, inventory: [], usedCodes: [] };
+        let communityBlooks = [];
         const DEC = 10n ** 33n;
 
         const packs = [
-            { name: 'Medieval Pack', icon: '🏰', cost: 1000n, pool: [
-                {name:'Peasant', rarity:'Common', img:'👨‍🌾'}, {name:'Squire', rarity:'Common', img:'🛡️'}, 
-                {name:'Knight', rarity:'Rare', img:'🤺'}, {name:'Archer', rarity:'Rare', img:'🏹'},
-                {name:'Wizard', rarity:'Epic', img:'🧙'}, {name:'King', rarity:'Legendary', img:'👑'},
-                {name:'The Dragon', rarity:'Chroma', img:'🐉'}
-            ]},
-            { name: 'Shark Pack', icon: '🦈', cost: 1000n, pool: [
-                {name:'Reef Shark', rarity:'Common', img:'🐟'}, {name:'Mako Shark', rarity:'Rare', img:'🦈'}, 
-                {name:'Hammerhead Shark', rarity:'Epic', img:'🔨'}, {name:'Great White Shark', rarity:'Legendary', img:'🦈'},
-                {name:'Megalodon', rarity:'Chroma', img:'🦖'}
-            ]},
-            { name: 'Roman Pack', icon: '🏛️', cost: 1000n, pool: [
-                {name:'Roman Soldier', rarity:'Common', img:'💂'}, {name:'Centurion', rarity:'Rare', img:'🎖️'}, 
-                {name:'Gladiator', rarity:'Epic', img:'⚔️'}, {name:'Julius Caesar', rarity:'Legendary', img:'🏛️'},
-                {name:'Mars', rarity:'Chroma', img:'☄️'}
-            ]},
-            { name: 'Aquatic Pack', icon: '🌊', cost: 1000n, pool: [
-                {name:'Clownfish', rarity:'Common', img:'🐠'}, {name:'Sea Turtle', rarity:'Rare', img:'🐢'}, 
-                {name:'Giant Squid', rarity:'Epic', img:'🦑'}, {name:'Blue Whale', rarity:'Legendary', img:'🐋'},
-                {name:'Kraken', rarity:'Chroma', img:'🐙'}
-            ]},
-            { name: 'Science Pack', icon: '🧪', cost: 1000n, pool: [
-                {name:'Beaker', rarity:'Common', img:'🧪'}, {name:'Microscope', rarity:'Rare', img:'🔬'}, 
-                {name:'DNA Helix', rarity:'Epic', img:'🧬'}, {name:'Albert Einstein', rarity:'Legendary', img:'👨‍🏫'},
-                {name:'The Atom', rarity:'Chroma', img:'⚛️'}
-            ]},
-            { name: 'Exclusive Pack', icon: '💎', cost: DEC, pool: [
-                {name:'Jandul Dul Dul', rarity:'Exclusive', img:'🤡'},
-                {name:'Raccooni Jandelini', rarity:'Exclusive', img:'🦝'}
-            ]}
+            { name: 'Medieval Pack', icon: '🏰', cost: 1000n, pool: [{name:'Peasant', rarity:'Common', img:'👨‍🌾'}, {name:'Knight', rarity:'Rare', img:'🤺'}, {name:'Wizard', rarity:'Epic', img:'🧙'}, {name:'King', rarity:'Legendary', img:'👑'}, {name:'The Dragon', rarity:'Chroma', img:'🐉'}] },
+            { name: 'Shark Pack', icon: '🦈', cost: 1000n, pool: [{name:'Reef Shark', rarity:'Common', img:'🐟'}, {name:'Mako Shark', rarity:'Rare', img:'🦈'}, {name:'Hammerhead', rarity:'Epic', img:'🔨'}, {name:'Great White', rarity:'Legendary', img:'🦈'}, {name:'Megalodon', rarity:'Chroma', img:'🦖'}] },
+            { name: 'Roman Pack', icon: '🏛️', cost: 1000n, pool: [{name:'Soldier', rarity:'Common', img:'💂'}, {name:'Centurion', rarity:'Rare', img:'🎖️'}, {name:'Gladiator', rarity:'Epic', img:'⚔️'}, {name:'Julius Caesar', rarity:'Legendary', img:'🏛️'}, {name:'Mars', rarity:'Chroma', img:'☄️'}] },
+            { name: 'Aquatic Pack', icon: '🌊', cost: 1000n, pool: [{name:'Clownfish', rarity:'Common', img:'🐠'}, {name:'Sea Turtle', rarity:'Rare', img:'🐢'}, {name:'Giant Squid', rarity:'Epic', img:'🦑'}, {name:'Blue Whale', rarity:'Legendary', img:'🐋'}, {name:'Kraken', rarity:'Chroma', img:'🐙'}] },
+            { name: 'Science Pack', icon: '🧪', cost: 1000n, pool: [{name:'Beaker', rarity:'Common', img:'🧪'}, {name:'Microscope', rarity:'Rare', img:'🔬'}, {name:'DNA', rarity:'Epic', img:'🧬'}, {name:'Einstein', rarity:'Legendary', img:'👨‍🏫'}, {name:'The Atom', rarity:'Chroma', img:'⚛️'}] },
+            { name: 'Exclusive Pack', icon: '💎', cost: DEC, pool: [{name:'Jandul Dul Dul', rarity:'Exclusive', img:'🤡'}, {name:'Raccooni Jandelini', rarity:'Exclusive', img:'🦝'}] }
         ];
 
-        function showAuth() { document.getElementById('auth-screen').style.display = 'flex'; }
-
+        function openAuth() { document.getElementById('auth-screen').style.display = 'flex'; }
+        
         function auth() {
-            const u = document.getElementById('user-input').value.trim();
-            if(!u) return;
-            user = u;
-            const saved = JSON.parse(localStorage.getItem('bd_'+u));
-            if(saved) data = { tokens: BigInt(saved.tokens), inventory: saved.inventory };
+            user = document.getElementById('user-input').value.trim();
+            if(!user) return;
+            const saved = JSON.parse(localStorage.getItem('bd_'+user));
+            if(saved) {
+                data.tokens = BigInt(saved.tokens);
+                data.inventory = saved.inventory || [];
+                data.usedCodes = saved.usedCodes || [];
+            }
             document.getElementById('splash-screen').style.display = 'none';
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('game-ui').style.display = 'block';
-            renderPacks(); updateUI();
+            updateUI(); renderPacks();
+            addChatMessage("System", `Welcome, ${user}!`);
         }
 
-        function renderPacks() {
-            document.getElementById('pack-list').innerHTML = packs.map((p, i) => `
-                <div class="pack-card" onclick="buyPack(${i})">
-                    <div style="font-size:60px;">${p.icon}</div>
-                    <h3>${p.name}</h3><p>${p.cost >= DEC ? '1 Decillion' : p.cost.toLocaleString()} Tokens</p>
-                </div>`).join('');
+        /* --- PROMO --- */
+        function redeemPromo() {
+            const code = document.getElementById('promo-input').value.trim();
+            if(code !== "BRA1NR0TJANDUL") return alert("Invalid Code!");
+            if(data.usedCodes.includes(code)) return alert("Already Used!");
+            data.usedCodes.push(code);
+            const prize = Math.random() < 0.5 ? 
+                {name:'Jandul Dul Dul', rarity:'Exclusive', img:'🤡'} : 
+                {name:'Raccooni Jandelini', rarity:'Exclusive', img:'🦝'};
+            data.inventory.push(prize);
+            save(); updateUI(); showReveal(prize);
         }
 
-        function buyPack(i) {
-            const p = packs[i];
-            if(data.tokens < p.cost) return alert("Insufficient balance!");
-            data.tokens -= p.cost;
-            const res = p.pool[Math.floor(Math.random()*p.pool.length)];
-            data.inventory.unshift({...res});
-            save(); updateUI(); showReveal(res);
+        /* --- COMMUNITY --- */
+        function sendMessage() {
+            const inp = document.getElementById('chat-input');
+            if(!inp.value) return;
+            addChatMessage(user, inp.value);
+            inp.value = '';
+        }
+
+        function addChatMessage(sender, text) {
+            const box = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'msg';
+            div.innerHTML = `<b>${sender}:</b> ${text}`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
         }
 
         function createCommunityBlook() {
             const n = document.getElementById('custom-name').value;
-            const im = document.getElementById('custom-img').value;
-            const pr = BigInt(document.getElementById('custom-price').value || 0);
-            if(!n || !im || pr <= 0n) return alert("Fill all fields correctly!");
-            communityBlooks.push({ name: n, img: im, cost: pr, rarity: 'Community', seller: user });
+            const i = document.getElementById('custom-img').value;
+            const p = BigInt(document.getElementById('custom-price').value || 0);
+            if(!n || !i || p <= 0n) return;
+            communityBlooks.push({name:n, img:i, cost:p, seller:user, rarity:'Community'});
             renderCommunity();
-            alert("Blook Listed!");
         }
 
         function renderCommunity() {
             document.getElementById('community-list').innerHTML = communityBlooks.map((b, i) => `
                 <div class="pack-card" onclick="buyCommunity(${i})">
-                    <div style="font-size:50px;">${b.img}</div>
-                    <b>${b.name}</b><br><small>By: ${b.seller}</small>
-                    <p style="color:var(--warning); font-weight:bold;">${b.cost.toLocaleString()} Tokens</p>
+                    <div style="font-size:40px;">${b.img}</div>
+                    <b>${b.name}</b><br><small>Seller: ${b.seller}</small>
+                    <p style="color:var(--warning)">${b.cost.toLocaleString()}</p>
                 </div>`).join('');
         }
 
@@ -207,8 +226,26 @@
             const b = communityBlooks[i];
             if(data.tokens < b.cost) return alert("Not enough tokens!");
             data.tokens -= b.cost;
-            data.inventory.unshift({...b});
-            save(); updateUI(); alert("You bought " + b.name);
+            data.inventory.push(b);
+            updateUI(); save(); alert("Bought!");
+        }
+
+        /* --- CORE ENGINE --- */
+        function renderPacks() {
+            document.getElementById('pack-list').innerHTML = packs.map((p, i) => `
+                <div class="pack-card" onclick="buyPack(${i})">
+                    <div style="font-size:60px;">${p.icon}</div>
+                    <h3>${p.name}</h3>
+                    <p>${p.cost >= DEC ? '1 Decillion' : p.cost.toLocaleString()} Tokens</p>
+                </div>`).join('');
+        }
+
+        function buyPack(i) {
+            if(data.tokens < packs[i].cost) return alert("Insufficient tokens!");
+            data.tokens -= packs[i].cost;
+            const res = packs[i].pool[Math.floor(Math.random()*packs[i].pool.length)];
+            data.inventory.unshift(res);
+            updateUI(); save(); showReveal(res);
         }
 
         function tab(id, btn) {
@@ -236,56 +273,46 @@
             document.getElementById('reveal-rarity').style.color = colors[b.rarity] || '#fff';
         }
 
-        function save() { if(user) localStorage.setItem('bd_'+user, JSON.stringify({tokens:data.tokens.toString(), inventory:data.inventory})); }
+        function save() { if(user) localStorage.setItem('bd_'+user, JSON.stringify({tokens:data.tokens.toString(), inventory:data.inventory, usedCodes:data.usedCodes})); }
         function updateUI() { document.getElementById('stat-tokens').innerText = data.tokens.toLocaleString(); }
-        function closeModal() { document.getElementById('reveal-modal').style.display='none'; }
+        function closeModal() { document.getElementById('reveal-modal').style.display = 'none'; }
 
         /* --- FLAPPY ENGINE --- */
         const cvs = document.getElementById('game-canvas');
         const ctx = cvs.getContext('2d');
-        let bird, pipes, score, earned, active = false;
+        let bird, pipes, score, active = false;
 
-        function resetGame() {
-            bird = { x: 50, y: 200, v: 0, g: 0.22, j: -4.5, s: 25 };
-            pipes = []; score = 0; earned = 0; active = true;
-            document.getElementById('f-score').innerText = "0";
-            document.getElementById('f-earned').innerText = "0";
-        }
-
+        function resetGame() { bird = { x: 50, y: 200, v: 0, g: 0.25, j: -5 }; pipes = []; score = 0; active = true; }
         function gameLoop() {
             if(active) {
                 bird.v += bird.g; bird.y += bird.v;
-                if(pipes.length === 0 || pipes[pipes.length-1].x < 220) {
-                    let gap = 140, top = Math.random() * (cvs.height - gap - 100) + 50;
-                    pipes.push({ x: cvs.width, t: top, b: top + gap, passed: false });
-                }
-                pipes.forEach((p, i) => {
+                if(pipes.length === 0 || pipes[pipes.length-1].x < 220) pipes.push({ x: 400, t: Math.random()*200+50, p: false });
+                pipes.forEach(p => {
                     p.x -= 3;
-                    if(p.x + 50 < 0) pipes.splice(i,1);
-                    if(!p.passed && bird.x > p.x + 50) { 
-                        p.passed = true; score++; earned += 100;
-                        document.getElementById('f-score').innerText = score;
-                        document.getElementById('f-earned').innerText = earned;
-                        data.tokens += 100n; updateUI(); 
-                    }
-                    if(bird.x + bird.s > p.x && bird.x < p.x + 50 && (bird.y < p.t || bird.y + bird.s > p.b)) active = false;
+                    if(!p.p && bird.x > p.x + 40) { p.p = true; score++; data.tokens += 100n; updateUI(); document.getElementById('f-score').innerText = score; }
+                    if(bird.x < p.x + 40 && bird.x + 25 > p.x && (bird.y < p.t || bird.y + 25 > p.t + 120)) active = false;
                 });
-                if(bird.y > cvs.height || bird.y < 0) active = false;
-                if(!active) save(); 
+                if(bird.y > 400 || bird.y < 0) active = false;
+                if(!active) save();
             }
-            ctx.clearRect(0,0, cvs.width, cvs.height);
-            ctx.fillStyle = "#f1c40f"; ctx.fillRect(bird.x, bird.y, bird.s, bird.s);
-            ctx.fillStyle = "#2ecc71";
-            pipes.forEach(p => { ctx.fillRect(p.x, 0, 50, p.t); ctx.fillRect(p.x, p.b, 50, cvs.height - p.b); });
+            ctx.fillStyle = "#70c5ce"; ctx.fillRect(0,0,400,400);
+            ctx.fillStyle = "#f1c40f"; ctx.fillRect(bird.x, bird.y, 25, 25);
+            ctx.fillStyle = "#2ecc71"; pipes.forEach(p => { ctx.fillRect(p.x, 0, 40, p.t); ctx.fillRect(p.x, p.t+120, 40, 400); });
             requestAnimationFrame(gameLoop);
         }
 
-        window.addEventListener('keydown', e => { 
-            if(e.code === 'Space' && active) bird.v = bird.j; 
-            if(e.ctrlKey && e.shiftKey && e.key === 'O') { data.tokens += 1000000n; updateUI(); }
-        });
+        function init() {
+            const emojis = ['🦝','🤡','🐉','👑','🧙','🤺','🦈','🐙','🧪','💂'];
+            for(let i=0; i<15; i++) {
+                const div = document.createElement('div'); div.className = 'floating-blook';
+                div.innerText = emojis[Math.floor(Math.random()*emojis.length)];
+                div.style.left = Math.random() * 100 + "vw"; div.style.top = Math.random() * 100 + "vh";
+                document.getElementById('blook-bg').appendChild(div);
+            }
+            gameLoop();
+        }
+        window.addEventListener('keydown', e => { if(e.code === 'Space' && active) bird.v = bird.j; });
         cvs.addEventListener('mousedown', () => { if(active) bird.v = bird.j; });
-        function init() { gameLoop(); }
     </script>
 </body>
 </html>
